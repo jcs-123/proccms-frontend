@@ -1,0 +1,121 @@
+/* Container padding */
+.calendar-container {
+  padding: 20px;
+}
+
+/* General font and color setup */
+.fc {
+  font-family: 'Arial', sans-serif;
+  color: black;
+}
+
+/* Calendar title styling */
+.fc-toolbar-title {
+  font-size: 1.8rem;
+  color: black !important;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+}
+
+/* Toolbar buttons */
+.fc-toolbar {
+  justify-content: center;
+  gap: 10px;
+}
+.fc-button {
+  background-color: #00a9d4 !important;
+  border: none !important;
+  color: white !important;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 4px;
+}
+.fc-button:disabled {
+  opacity: 0.5 !important;
+}
+
+/* Header days (Sun, Mon, etc.) */
+.fc-col-header-cell-cushion {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: black !important;
+  text-align: center;
+  text-decoration: none !important;
+}
+
+/* Header cell background */
+.fc-col-header-cell {
+  background-color: #007cc2;
+  border: 1px solid #fff;
+  color: white;
+}
+
+/* Date numbers in each day cell */
+.fc-daygrid-day-number {
+  display: block;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.4rem;
+  color: black !important;
+  text-decoration: none !important;
+  margin-top: 5px;
+}
+
+/* Center all content in the cell */
+.fc-daygrid-day-frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Event appearance */
+.fc-event {
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 2px 4px;
+  border-radius: 4px;
+  margin-top: 4px;
+  color: white !important;
+}
+
+/* Modal styling */
+.modal-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  outline: none;
+  box-shadow: 0 0 10px rgba(0,0,0,0.25);
+}
+/* BookingCalendar.css */
+
+.fc-event {
+  padding: 4px;
+  font-size: 13px;
+  border-radius: 4px;
+}
+
+.tooltip-box {
+  position: absolute;
+  z-index: 9999;
+  background: white;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 12px;
+  width: 300px;
+  font-size: 13px;
+  box-shadow: 0px 2px 12px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+.modal-box p {
+  margin: 4px 0;
+  font-size: 14px;
+}
+

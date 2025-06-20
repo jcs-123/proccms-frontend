@@ -1,0 +1,60 @@
+/* RoomBookingList.css */
+.room-booking-container {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  
+}
+
+.room-booking-container h5,
+.room-booking-container h6 {
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.room-booking-container .form-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.room-booking-container .form-select,
+.room-booking-container .form-control {
+  font-size: 0.9rem;
+}
+
+.room-booking-container .btn {
+  font-size: 0.85rem;
+  padding: 6px 12px;
+}
+
+.room-booking-container .btn-danger {
+  margin-left: 10px;
+}
+
+.room-booking-container table {
+  font-size: 0.9rem;
+}
+
+.room-booking-container .badge {
+  font-size: 0.75rem;
+  padding: 5px 10px;
+  border-radius: 8px;
+}
+
+.room-booking-container .table td,
+.room-booking-container .table th {
+  vertical-align: middle;
+}
+
+.room-booking-container .action-buttons > * {
+  margin-bottom: 5px;
+}
+
+@media (min-width: 768px) {
+  .room-booking-container .action-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+}

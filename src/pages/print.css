@@ -1,0 +1,29 @@
+/* print.css */
+
+@media print {
+  body * {
+    visibility: hidden; /* Hide everything by default */
+  }
+
+  .print-area, .print-area * {
+    visibility: visible; /* Show only the print section */
+  }
+
+  .print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  /* Optional: Force white background and black text for printing */
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  @page {
+    margin: 20mm;
+    size: auto;
+  }
+}

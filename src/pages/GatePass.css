@@ -1,0 +1,42 @@
+.gatepass-container {
+  padding: 25px;
+  background-color: #f9fbfc;
+  min-height: 100vh;
+  margin-top: 50px; /* Add spacing at the top */
+}
+
+.gatepass-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 15px 20px;
+  border-bottom: 1px solid #ddd;
+  border-radius: 5px 5px 0 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.filter-section {
+  background-color: white;
+  padding: 20px;
+  border-top: none;
+  border-radius: 0 0 5px 5px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.no-result {
+  background: white;
+  padding: 30px;
+  text-align: center;
+  font-weight: bold;
+  color: #888;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+}
+
