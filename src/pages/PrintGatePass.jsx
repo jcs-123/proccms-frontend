@@ -10,7 +10,7 @@ function PrintGatePass() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/api/gatepass/${id}`)
+      .get(`https://proccms-backend.onrender.com/api/gatepass/${id}`)
       .then((res) => setGatePass(res.data))
       .catch((err) => console.error("Error fetching print data", err));
   }, [id]);

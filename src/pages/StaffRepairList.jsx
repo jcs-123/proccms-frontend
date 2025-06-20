@@ -28,7 +28,7 @@ function StaffRepairRequestList() {
 
   const fetchAssignedRequests = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/repair-requests?role=staff&username=${username}`);
+      const res = await fetch(`https://proccms-backend.onrender.com/api/repair-requests?role=staff&username=${username}`);
       if (!res.ok) throw new Error("Failed to fetch requests");
 
       const data = await res.json();
@@ -39,7 +39,7 @@ function StaffRepairRequestList() {
         department: req.department || "Unknown", // <-- Add this
         details: req.description,
         type: req.isNewRequirement ? "New Requirement" : "Repair Request",
-        fileUrl: req.fileUrl ? `http://localhost:5000${req.fileUrl}` : null,
+        fileUrl: req.fileUrl ? `https://proccms-backend.onrender.com${req.fileUrl}` : null,
         status: req.status || "Pending",
         assignedTo: req.assignedTo || "Not Assigned",
       }));
@@ -53,7 +53,7 @@ function StaffRepairRequestList() {
 
   const handleView = async (request) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/repair-requests/${request.id}/remarks`);
+      const res = await fetch(`https://proccms-backend.onrender.com/api/repair-requests/${request.id}/remarks`);
       if (!res.ok) throw new Error("Failed to fetch remarks");
       const remarks = await res.json();
       setSelectedRequest(request);
@@ -66,7 +66,7 @@ function StaffRepairRequestList() {
 
   const handleRemarks = async (request) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/repair-requests/${request.id}/remarks`);
+      const res = await fetch(`https://proccms-backend.onrender.com/api/repair-requests/${request.id}/remarks`);
       if (!res.ok) throw new Error("Failed to fetch remarks");
       const remarks = await res.json();
       setRemarksList(remarks);
@@ -81,7 +81,7 @@ function StaffRepairRequestList() {
     if (!newRemark.trim()) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/repair-requests/${selectedRequest.id}/remarks`, {
+      const res = await fetch(`https://proccms-backend.onrender.com/api/repair-requests/${selectedRequest.id}/remarks`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: newRemark, enteredBy: username }),
@@ -98,7 +98,7 @@ function StaffRepairRequestList() {
 
   const handleAllRemarksClick = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/repair-requests/all-remarks`);
+      const res = await fetch(`https://proccms-backend.onrender.com/api/repair-requests/all-remarks`);
 
       if (!res.ok) throw new Error("Failed to fetch all remarks");
       const data = await res.json();
@@ -111,7 +111,7 @@ function StaffRepairRequestList() {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/repair-requests/${id}`, {
+      const res = await fetch(`https://proccms-backend.onrender.com/api/repair-requests/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),

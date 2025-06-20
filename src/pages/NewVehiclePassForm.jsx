@@ -26,7 +26,7 @@ function NewVehiclePassForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/vehicles', formData);
+      await axios.post('https://proccms-backend.onrender.com/api/vehicles', formData);
       alert("Vehicle pass saved successfully!");
       setFormData({
         passNo: '',

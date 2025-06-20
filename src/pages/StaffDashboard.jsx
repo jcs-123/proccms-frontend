@@ -19,7 +19,7 @@ const StaffDashboard = () => {
 
     const fetchRepairRequests = async () => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/repair-requests?assignedTo=${username}`);
+            const res = await axios.get(`https://proccms-backend.onrender.com/api/repair-requests?assignedTo=${username}`);
             const lastMonth = new Date();
             lastMonth.setMonth(lastMonth.getMonth() - 1);
             const recentAssigned = res.data.filter(item =>
@@ -33,7 +33,7 @@ const StaffDashboard = () => {
 
     const fetchRoomBookings = async () => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/room-booking/assigned?staff=${username}`);
+            const res = await axios.get(`https://proccms-backend.onrender.com/api/room-booking/assigned?staff=${username}`);
             const lastMonth = new Date();
             lastMonth.setMonth(lastMonth.getMonth() - 1);
             const recentAssigned = res.data.filter(item =>

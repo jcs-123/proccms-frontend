@@ -21,7 +21,7 @@ function EditGatePassForm() {
 
   // Fetch existing data on mount
   useEffect(() => {
-    axios.get(`http://localhost:5000/api/gatepass/${id}`)
+    axios.get(`https://proccms-backend.onrender.com/api/gatepass/${id}`)
       .then(res => {
         const data = res.data;
         setFormData({
@@ -66,7 +66,7 @@ function EditGatePassForm() {
     const updatedGatePass = { ...formData, items };
 
     try {
-      await axios.put(`http://localhost:5000/api/gatepass/${id}`, updatedGatePass);
+      await axios.put(`https://proccms-backend.onrender.com/api/gatepass/${id}`, updatedGatePass);
       alert("Gate Pass updated successfully!");
       navigate("/gatepass"); // redirect to list after update
     } catch (error) {

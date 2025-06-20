@@ -56,9 +56,9 @@ function VehiclePassForm() {
 
     try {
       if (passId) {
-        await axios.put(`http://localhost:5000/api/vehicles/${passId}`, formData);
+        await axios.put(`https://proccms-backend.onrender.com/api/vehicles/${passId}`, formData);
       } else {
-        await axios.post('http://localhost:5000/api/vehicles', formData);
+        await axios.post('https://proccms-backend.onrender.com/api/vehicles', formData);
       }
       alert(`Vehicle pass ${passId ? 'updated' : 'created'} successfully!`);
       navigate('/vehicle-pass');

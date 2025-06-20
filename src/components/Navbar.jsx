@@ -22,7 +22,7 @@ const Navbar = ({ onLogout }) => {
     }
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/reset-password', {
+      const res = await fetch('https://proccms-backend.onrender.com/api/auth/reset-password', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password: newPassword }),

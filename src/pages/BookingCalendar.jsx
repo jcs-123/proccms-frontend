@@ -24,7 +24,7 @@ const CalendarBooking = ({ onBookingUpdated }) => {
 
   const fetchBookings = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/room-booking');
+      const response = await axios.get('https://proccms-backend.onrender.com/api/room-booking');
       const bookingsData = response.data;
       setBookings(bookingsData);
 
@@ -79,7 +79,7 @@ const CalendarBooking = ({ onBookingUpdated }) => {
 
   const fetchStaffList = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/staff');
+      const res = await axios.get('https://proccms-backend.onrender.com/api/staff');
       setStaffList(res.data);
     } catch (error) {
       console.error('Failed to fetch staff list', error);
@@ -129,7 +129,7 @@ const CalendarBooking = ({ onBookingUpdated }) => {
     if (!selectedBooking) return;
     setUpdating(true);
     try {
-      const response = await axios.put(`http://localhost:5000/api/room-booking/${selectedBooking._id}`, {
+      const response = await axios.put(`https://proccms-backend.onrender.com/api/room-booking/${selectedBooking._id}`, {
         status: newStatus,
         assignedStaff,
       });

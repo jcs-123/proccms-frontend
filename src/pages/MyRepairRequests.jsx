@@ -27,7 +27,7 @@ function MyRepairRequests() {
   const fetchRequests = async () => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/repair-requests?username=${username}&role=${role}&department=${department}`
+        `https://proccms-backend.onrender.com/api/repair-requests?username=${username}&role=${role}&department=${department}`
       );
       const data = await res.json();
 
@@ -38,7 +38,7 @@ function MyRepairRequests() {
         type: req.isNewRequirement ? "New Requirement" : "Repair Request",
         assignedTo: req.assignedTo || "--- Not Assigned ---",
         status: req.status || "Pending",
-        fileUrl: req.fileUrl ? `http://localhost:5000${req.fileUrl}` : null,
+        fileUrl: req.fileUrl ? `https://proccms-backend.onrender.com${req.fileUrl}` : null,
         remarks: req.remarks || [],
         completedAt: req.completedAt ? new Date(req.completedAt).toLocaleString() : null,
         isVerified: req.isVerified || false
@@ -82,7 +82,7 @@ function MyRepairRequests() {
       const enteredBy = username || "User";
 
       const res = await fetch(
-        `http://localhost:5000/api/repair-requests/${selectedRequest.id}/remarks`,
+        `https://proccms-backend.onrender.com/api/repair-requests/${selectedRequest.id}/remarks`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

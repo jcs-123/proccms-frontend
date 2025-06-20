@@ -22,7 +22,7 @@ const UserDashboard = () => {
 
   const fetchMyRepairRequests = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/repair-requests', {
+      const res = await axios.get('https://proccms-backend.onrender.com/api/repair-requests', {
         params: {
           role: "user",
           username,
@@ -39,7 +39,7 @@ const UserDashboard = () => {
 
   const fetchMyRoomBookings = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/room-booking', {
+      const res = await axios.get('https://proccms-backend.onrender.com/api/room-booking', {
         params: {
           requestFrom: username,
           department

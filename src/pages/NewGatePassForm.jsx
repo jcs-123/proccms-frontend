@@ -76,7 +76,7 @@ function NewGatePassForm() {
 
     const gatePassData = { ...formData, items };
     try {
-      const response = await axios.post("http://localhost:5000/api/gatepass", gatePassData);
+      const response = await axios.post("https://proccms-backend.onrender.com/api/gatepass", gatePassData);
       alert("Gate Pass saved successfully!");
       return response.data;
     } catch (error) {

@@ -222,7 +222,7 @@ function RepairList() {
         const remark = allRemarks[index];
 
         try {
-            await axios.patch(`http://localhost:5000/api/repair-requests/${remark.requestId}/remarks/${remark._id}/mark-seen`);
+            await axios.patch(`https://proccms-backend.onrender.com/api/repair-requests/${remark.requestId}/remarks/${remark._id}/mark-seen`);
 
             const updatedRemarks = [...allRemarks];
             updatedRemarks[index].seen = true;
@@ -240,7 +240,7 @@ function RepairList() {
         try {
             const enteredBy = localStorage.getItem("username") || "Admin";
 
-            const res = await fetch(`http://localhost:5000/api/repair-requests/${selectedRequest.id}/remarks`, {
+            const res = await fetch(`https://proccms-backend.onrender.com/api/repair-requests/${selectedRequest.id}/remarks`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

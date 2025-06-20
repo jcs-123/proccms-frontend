@@ -36,7 +36,7 @@ const AddStaff = () => {
 
     const fetchStaff = async () => {
         try {
-            const res = await axios.get("http://localhost:5000/api/staff");
+            const res = await axios.get("https://proccms-backend.onrender.com/api/staff");
             setStaffList(res.data);
         } catch (err) {
             console.error("Failed to fetch staff:", err);
@@ -50,7 +50,7 @@ const AddStaff = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post("http://localhost:5000/api/staff/add", form);
+            const res = await axios.post("https://proccms-backend.onrender.com/api/staff/add", form);
             setMessage(res.data.message);
             setError(false);
             setForm({ name: "", username: "", password: "", department: "" });

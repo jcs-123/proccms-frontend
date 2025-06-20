@@ -12,7 +12,7 @@ function VehicleGetdata() {
     const [modalData, setModalData] = useState(null);
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/vehicles')
+        axios.get('https://proccms-backend.onrender.com/api/vehicles')
             .then(res => setData(res.data))
             .catch(err => console.error('Error fetching vehicle pass data:', err));
     }, []);

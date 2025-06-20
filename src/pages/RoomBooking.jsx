@@ -76,7 +76,7 @@ function RoomBooking() {
     };
 
     try {
-      const res = await fetch("http://localhost:5000/api/room-booking", {
+      const res = await fetch("https://proccms-backend.onrender.com/api/room-booking", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

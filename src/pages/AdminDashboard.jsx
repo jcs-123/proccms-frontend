@@ -28,9 +28,9 @@ const Dashboard = () => {
       }
 
       const [summaryRes, staffRes, roomRes] = await Promise.all([
-        axios.get("http://localhost:5000/api/admin/repair-summary"),
-        axios.get("http://localhost:5000/api/admin/repair-staff-summary", { params }),
-        axios.get("http://localhost:5000/api/admin/room-requests"),
+        axios.get("https://proccms-backend.onrender.com/api/admin/repair-summary"),
+        axios.get("https://proccms-backend.onrender.com/api/admin/repair-staff-summary", { params }),
+        axios.get("https://proccms-backend.onrender.com/api/admin/room-requests"),
       ]);
 
       setSummary(summaryRes.data);

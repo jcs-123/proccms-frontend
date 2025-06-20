@@ -23,7 +23,7 @@ function StaffAllBookings() {
 
     const fetchAllBookings = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/room-booking/staff-all', {
+            const response = await axios.get('https://proccms-backend.onrender.com/api/room-booking/staff-all', {
                 params: { username },
             });
             setBookings(response.data);

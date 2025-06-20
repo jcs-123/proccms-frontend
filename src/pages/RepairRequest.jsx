@@ -24,7 +24,7 @@ function RepairRequest() {
   if (file) formData.append("file", file);
 
   try {
-    const res = await fetch("http://localhost:5000/api/repair-requests", {
+    const res = await fetch("https://proccms-backend.onrender.com/api/repair-requests", {
       method: "POST",
       body: formData,
     });

@@ -30,7 +30,7 @@ function UserRoomBookingList() {
   const fetchBookings = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:5000/api/room-booking');
+      const response = await axios.get('https://proccms-backend.onrender.com/api/room-booking');
 
       // Filter bookings for the logged-in user only
       const userBookings = response.data.filter(booking => {
@@ -78,7 +78,7 @@ function UserRoomBookingList() {
     }
     try {
       // Send remarks to backend API as admin remarks
-      await axios.post(`http://localhost:5000/api/room-booking/${selectedBooking._id}/user-remarks`, {
+      await axios.post(`https://proccms-backend.onrender.com/api/room-booking/${selectedBooking._id}/user-remarks`, {
         remarks,
       });
       alert('user remarks saved successfully!');

@@ -17,7 +17,7 @@ function GatePass() {
 
     const fetchGatePasses = async () => {
         try {
-            const res = await axios.get("http://localhost:5000/api/gatepass");
+            const res = await axios.get("https://proccms-backend.onrender.com/api/gatepass");
 
             // Sort by date descending (latest first)
             const sortedData = res.data.sort((a, b) => new Date(b.date) - new Date(a.date));

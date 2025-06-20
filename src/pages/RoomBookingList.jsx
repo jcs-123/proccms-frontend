@@ -90,7 +90,7 @@ function RoomBookingList() {
     }
     try {
       // Send remarks to backend API as admin remarks
-      await axios.post(`http://localhost:5000/api/room-booking/${selectedBooking._id}/admin-remarks`, {
+      await axios.post(`https://proccms-backend.onrender.com/api/room-booking/${selectedBooking._id}/admin-remarks`, {
         remarks,
       });
       alert('Admin remarks saved successfully!');

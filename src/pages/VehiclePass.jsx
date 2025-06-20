@@ -36,7 +36,7 @@ const VehiclePassList = () => {
 
  const fetchVehiclePasses = async () => {
   try {
-    const res = await axios.get("http://localhost:5000/api/vehicles");
+    const res = await axios.get("https://proccms-backend.onrender.com/api/vehicles");
     if (Array.isArray(res.data)) {
       const sortedData = res.data.sort((a, b) => new Date(b.date) - new Date(a.date)); // 🔁 Latest first
       setVehicleList(sortedData);
