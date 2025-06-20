@@ -3,6 +3,7 @@ import { Form, Row, Col, Button } from "react-bootstrap";
 import { toast, ToastContainer } from 'react-toastify';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { Link } from 'react-router-dom';
 
 
 function RoomBooking() {
@@ -260,7 +261,9 @@ function RoomBooking() {
         {/* Right Section */}
         <Col xs={12} md={4}>
           <div className="p-4 p-md-5 bg-white border rounded shadow-sm mt-4 mt-md-0 text-center text-md-start">
-            <a href="booking-calender" className="text-primary d-block mb-3 fw-bold">View Booking Calendar</a>
+            <Link to="/booking-calender" className="text-primary d-block mb-3 fw-bold">
+              View Booking Calendar
+            </Link>
             <div className="mb-3">
               <strong>Background Colors</strong>
               <div className="mt-2">
