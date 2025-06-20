@@ -50,7 +50,7 @@ function RepairList() {
 
     const fetchStaff = async () => {
         try {
-            const res = await fetch("http://localhost:5000/api/staff");
+            const res = await fetch("https://proccms-backend.onrender.com/api/staff");
             const data = await res.json();
             const formatted = data.map(staff => staff.name);
             setStaffList(["--- select ---", ...formatted]);
@@ -61,7 +61,7 @@ function RepairList() {
 
     const handleAllRemarksClick = async () => {
         try {
-            const res = await fetch(`http://localhost:5000/api/repair-requests/all-remarks`);
+            const res = await fetch(`https://proccms-backend.onrender.com/api/repair-requests/all-remarks`);
             if (!res.ok) throw new Error("Failed to fetch all remarks");
             const data = await res.json();
             setAllRemarks(data);
@@ -86,7 +86,7 @@ function RepairList() {
             if (filters.status && filters.status !== "--- All ---") params.append("status", filters.status);
             if (filters.assignedPerson && filters.assignedPerson !== "--- select ---") params.append("assignedTo", filters.assignedPerson);
 
-            const res = await fetch(`http://localhost:5000/api/repair-requests?${params}`);
+            const res = await fetch(`https://proccms-backend.onrender.com/api/repair-requests?${params}`);
             if (!res.ok) throw new Error("Failed to fetch repair requests");
 
             let data = await res.json();
@@ -106,7 +106,7 @@ function RepairList() {
                 mobile: req.phone || '--',
                 details: req.description,
                 type: req.isNewRequirement ? "New Requirement" : "Repair Request",
-                fileUrl: req.fileUrl ? `http://localhost:5000${req.fileUrl}` : "https://via.placeholder.com/20",
+                fileUrl: req.fileUrl ? `https://proccms-backend.onrender.com${req.fileUrl}` : "https://via.placeholder.com/20",
                 assignedTo: req.assignedTo || "--- select ---",
                 status: req.status || "Pending",
                 isVerified: req.isVerified || false,
@@ -134,7 +134,7 @@ function RepairList() {
                         : req
                 )
             );
-            const res = await fetch(`http://localhost:5000/api/repair-requests/${id}`, {
+            const res = await fetch(`https://proccms-backend.onrender.com/api/repair-requests/${id}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -164,7 +164,7 @@ function RepairList() {
                         : req
                 )
             );
-            const res = await fetch(`http://localhost:5000/api/repair-requests/${id}`, {
+            const res = await fetch(`https://proccms-backend.onrender.com/api/repair-requests/${id}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(updateData),
@@ -182,7 +182,7 @@ function RepairList() {
                     req.id === id ? { ...req, isVerified: true } : req
                 )
             );
-            const res = await fetch(`http://localhost:5000/api/repair-requests/${id}/verify`, {
+            const res = await fetch(`https://proccms-backend.onrender.com/api/repair-requests/${id}/verify`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ isVerified: true }),

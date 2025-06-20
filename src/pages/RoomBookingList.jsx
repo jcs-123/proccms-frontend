@@ -52,7 +52,7 @@ function RoomBookingList() {
   const fetchBookings = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:5000/api/room-booking');
+      const response = await axios.get('https://proccms-backend.onrender.com/api/room-booking');
       setBookings(response.data);
       setError(null);
     } catch (err) {
