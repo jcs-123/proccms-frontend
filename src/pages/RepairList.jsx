@@ -43,7 +43,7 @@ function RepairList() {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
 
-  useEffect(() => {
+    useEffect(() => {
         fetchRequests();
         fetchStaff();
     }, [urlFilter]);
@@ -72,10 +72,10 @@ function RepairList() {
     };
 
 
-    
 
 
-     const fetchRequests = async () => {
+
+    const fetchRequests = async () => {
         try {
             const params = new URLSearchParams();
             if (role !== "admin") params.append("username", username);
@@ -239,6 +239,7 @@ function RepairList() {
     const handleSaveRemarks = async () => {
         try {
             const enteredBy = localStorage.getItem("username") || "Admin";
+            const isAdmin = localStorage.getItem("role") === "admin";
 
             const res = await fetch(`https://proccms-backend.onrender.com/api/repair-requests/${selectedRequest.id}/remarks`, {
                 method: "POST",
@@ -251,6 +252,33 @@ function RepairList() {
 
             if (!res.ok) throw new Error("Failed to save remarks");
 
+            // If admin is adding the remark, update status to "Refer Remark"
+            if (isAdmin) {
+                await fetch(`https://proccms-backend.onrender.com/api/repair-requests/${selectedRequest.id}`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        status: "Refer Remark"
+                    }),
+                });
+
+                // Update local state
+                setRequests(prev =>
+                    prev.map(req =>
+                        req.id === selectedRequest.id
+                            ? { ...req, status: "Refer Remark" }
+                            : req
+                    )
+                );
+
+                if (selectedRequest) {
+                    setSelectedRequest(prev => ({
+                        ...prev,
+                        status: "Refer Remark"
+                    }));
+                }
+            }
+
             toast.success("Remarks saved successfully!");
             setShowRemarksModal(false);
             fetchRequests(); // Refresh the list
@@ -260,7 +288,8 @@ function RepairList() {
                 const updatedRequest = await res.json();
                 setSelectedRequest(prev => ({
                     ...prev,
-                    remarks: updatedRequest.remarks
+                    remarks: updatedRequest.remarks,
+                    ...(isAdmin && { status: "Refer Remark" }) // Add status if admin
                 }));
             }
         } catch (err) {
@@ -322,7 +351,7 @@ function RepairList() {
     };
     return (
         <Container fluid className="p-4 mt-5" style={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-             <h5 className="mb-4 fw-bold">Repair Request List {urlFilter ? `- ${urlFilter.charAt(0).toUpperCase() + urlFilter.slice(1)}` : ''}</h5>
+            <h5 className="mb-4 fw-bold">Repair Request List {urlFilter ? `- ${urlFilter.charAt(0).toUpperCase() + urlFilter.slice(1)}` : ''}</h5>
 
             {/* Filter Section */}
             <Row className="g-3 align-items-end">
@@ -433,7 +462,12 @@ function RepairList() {
 
 
                                     <td>{req.type}</td>
-                                    <td><img src={req.fileUrl} alt="file" style={{ maxWidth: 40 }} /></td>
+                                    <td>
+                                        <a href={req.fileUrl} target="_blank" rel="noopener noreferrer">
+                                            <img src={req.fileUrl} alt="file" style={{ maxWidth: 40, cursor: 'pointer' }} />
+                                        </a>
+                                    </td>
+
                                     <td style={{ minWidth: "110px", padding: "8px", textAlign: "center" }}>
                                         {req.assignedTo !== "--- select ---" && (
                                             <strong className="text-uppercase d-block mb-1">{req.assignedTo}</strong>
