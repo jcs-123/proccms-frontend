@@ -1,12 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import axios from 'axios';
-import { Modal, Button, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import {
+  Modal,
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
+} from '@mui/material';
 import './BookingCalendar.css';
-
 
 const username = localStorage.getItem("name");
 const role = localStorage.getItem("role");
@@ -22,6 +29,9 @@ const CalendarBooking = ({ onBookingUpdated }) => {
   const [hoveredEvent, setHoveredEvent] = useState(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
+  const calendarRef = useRef(null);
+  const location = useLocation(); // for getting ?date param from URL
+
   const fetchBookings = async () => {
     try {
       const response = await axios.get('https://proccms-backend.onrender.com/api/room-booking');
@@ -30,14 +40,10 @@ const CalendarBooking = ({ onBookingUpdated }) => {
 
       const parseDateTime = (date, time) => {
         if (!date || !time) return new Date(date || Date.now());
-
-        // Convert "1:30 PM" → "13:30"
         const [timeStr, modifier] = time.split(' ');
         let [hours, minutes] = timeStr.split(':').map(Number);
-
         if (modifier === 'PM' && hours < 12) hours += 12;
         if (modifier === 'AM' && hours === 12) hours = 0;
-
         return new Date(`${date}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`);
       };
 
@@ -46,21 +52,16 @@ const CalendarBooking = ({ onBookingUpdated }) => {
           ? new Date(booking.bookingDateTime)
           : parseDateTime(booking.date, booking.timeFrom);
 
-
-        // Light green for booked, red for cancelled
         let bgColor = '#6c757d';
         if (booking.status === 'Booked') bgColor = '#59a10be5';
         else if (booking.status === 'Cancelled') bgColor = '#dc3545';
 
-        // Only start time (like 9:00 AM)
         const startTimeStr = startDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-
-        // Booking number starts from 1 (based on index)
         const bookingNum = index + 1;
 
         return {
           id: booking._id,
-          title: `${startTimeStr}Booking No:${bookingNum}`,
+          title: `${startTimeStr} Booking No:${bookingNum}`,
           start: startDate,
           allDay: false,
           backgroundColor: bgColor,
@@ -69,7 +70,6 @@ const CalendarBooking = ({ onBookingUpdated }) => {
           extendedProps: booking,
         };
       });
-
 
       setEvents(mappedEvents);
     } catch (error) {
@@ -99,9 +99,7 @@ const CalendarBooking = ({ onBookingUpdated }) => {
     setTooltipPosition({ x: e.pageX, y: e.pageY });
   };
 
-  const handleMouseLeave = () => {
-    setHoveredEvent(null);
-  };
+  const handleMouseLeave = () => setHoveredEvent(null);
 
   const handleMouseMove = (e) => {
     if (hoveredEvent) {
@@ -119,6 +117,16 @@ const CalendarBooking = ({ onBookingUpdated }) => {
     if (openModal) fetchStaffList();
   }, [openModal]);
 
+  // 👇 Navigate to the date in URL after render
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const dateParam = queryParams.get('date');
+    if (dateParam && calendarRef.current) {
+      const calendarApi = calendarRef.current.getApi();
+      calendarApi.gotoDate(dateParam);
+    }
+  }, [location.search]);
+
   const handleClose = () => {
     setOpenModal(false);
     setSelectedBooking(null);
@@ -129,10 +137,13 @@ const CalendarBooking = ({ onBookingUpdated }) => {
     if (!selectedBooking) return;
     setUpdating(true);
     try {
-      const response = await axios.put(`https://proccms-backend.onrender.com/api/room-booking/${selectedBooking._id}`, {
-        status: newStatus,
-        assignedStaff,
-      });
+      const response = await axios.put(
+        `https://proccms-backend.onrender.com/api/room-booking/${selectedBooking._id}`,
+        {
+          status: newStatus,
+          assignedStaff,
+        }
+      );
       setSelectedBooking(response.data);
       await fetchBookings();
       setUpdating(false);
@@ -148,6 +159,7 @@ const CalendarBooking = ({ onBookingUpdated }) => {
   return (
     <div className="calendar-container mt-5">
       <FullCalendar
+        ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
         headerToolbar={{
@@ -205,14 +217,12 @@ const CalendarBooking = ({ onBookingUpdated }) => {
           <br />
           <b>Person:</b> {hoveredEvent.username || 'N/A'} <br />
           <b>Purpose:</b> {hoveredEvent.purpose || 'N/A'}
-
         </div>
       )}
 
-      {/* Modal for Booking Details */}
-      {/* Modal for Booking Details — Only visible to admin */}
+      {/* Admin-only Booking Details Modal */}
       {role === 'admin' && (
-        <Modal open={openModal} onClose={handleClose} aria-labelledby="booking-details-title">
+        <Modal open={openModal} onClose={handleClose}>
           <div
             className="modal-box"
             style={{
@@ -232,8 +242,6 @@ const CalendarBooking = ({ onBookingUpdated }) => {
                 <h3 style={{ fontWeight: 'bold', borderBottom: '1px solid #ccc', paddingBottom: '10px' }}>
                   View Room Booking Details
                 </h3>
-
-                {/* 🔽 SCROLLABLE CONTENT CONTAINER */}
                 <div
                   style={{
                     maxHeight: '65vh',
@@ -248,7 +256,6 @@ const CalendarBooking = ({ onBookingUpdated }) => {
                       Booking No: #{selectedBooking.bookingNumber || selectedBooking._id.slice(-4)}
                     </span>
                   </div>
-
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
                     <span
                       style={{
@@ -314,7 +321,7 @@ const CalendarBooking = ({ onBookingUpdated }) => {
                   </FormControl>
                 </div>
 
-                {/* Buttons outside scroll */}
+                {/* Action Buttons */}
                 <div style={{ display: 'flex', gap: 10 }}>
                   <Button
                     variant="contained"
@@ -339,8 +346,6 @@ const CalendarBooking = ({ onBookingUpdated }) => {
           </div>
         </Modal>
       )}
-
-
     </div>
   );
 };

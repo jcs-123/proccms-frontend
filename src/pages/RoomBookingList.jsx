@@ -4,6 +4,8 @@ import axios from 'axios';
 import './RoomBookingList.css';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { useNavigate } from 'react-router-dom';
+
 
 
 function RoomBookingList() {
@@ -37,7 +39,7 @@ function RoomBookingList() {
     // Trigger download
     saveAs(blob, "RoomBookings.xlsx");
   };
-
+  const navigate = useNavigate();
 
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -101,6 +103,23 @@ function RoomBookingList() {
       alert('Failed to save admin remarks. Please try again.');
     }
   };
+
+  const handleConfirmBooking = (booking) => {
+  console.log("Booking object:", booking);
+
+  const bookingDate = booking.date || booking.bookingDateTime?.slice(0, 10);
+  console.log("Parsed booking date:", bookingDate);
+
+  if (!bookingDate) {
+    alert('No valid booking date available.');
+    console.error("Booking date is invalid or missing.");
+    return;
+  }
+
+  console.log(`Navigating to /booking-calender?date=${bookingDate}`);
+  navigate(`/booking-calender?date=${bookingDate}`);
+};
+
 
 
   // Filter logic
@@ -295,18 +314,31 @@ function RoomBookingList() {
                   </td>
 
                   <td>
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      onClick={() => openViewModal(booking)}
-                      className="me-2"
-                    >
-                      View
-                    </Button>
-                    <Button variant="secondary" size="sm" onClick={() => openRemarksModal(booking)}>
-                      Remarks
-                    </Button>
+                    <div className="d-flex flex-wrap gap-2">
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        onClick={() => openViewModal(booking)}
+                      >
+                        View
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => openRemarksModal(booking)}
+                      >
+                        Remarks
+                      </Button>
+                      <Button
+                        variant="success"
+                        size="sm"
+                        onClick={() => handleConfirmBooking(booking)}
+                      >
+                        Confirm Booking
+                      </Button>
+                    </div>
                   </td>
+
                 </tr>
               ))
             )}
