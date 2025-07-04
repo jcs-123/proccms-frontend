@@ -165,11 +165,14 @@ const CalendarBooking = ({ onBookingUpdated }) => {
             onMouseLeave={handleMouseLeave}
             style={{
               backgroundColor: eventInfo.event.backgroundColor,
-              padding: '2px 6px',
+              padding: '1px 3px',
               borderRadius: '4px',
-              fontWeight: 'bold',
-              fontSize: '12px',
-              color: 'white'
+              fontWeight: 700,
+              fontSize: '10px',
+              color: 'white',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
             }}
           >
             {eventInfo.timeText} {eventInfo.event.title}

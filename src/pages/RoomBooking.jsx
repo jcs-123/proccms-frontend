@@ -85,6 +85,7 @@ function RoomBooking() {
 
       if (res.ok) {
         toast.success("Room booked successfully!", { position: "top-center" });
+        // Reset form
         setRoomType("");
         setDate("");
         setTimeFrom("");
@@ -99,8 +100,10 @@ function RoomBooking() {
         setRemarks("");
         setMobileNumber("");
         setAgreed(false);
+      } else if (res.status === 409) {
+        toast.error("Room already booked for selected time range.", { position: "top-center" });
       } else {
-        toast.error("Booking failed.", { position: "top-center" });
+        toast.error("Booking failed. Please try again.", { position: "top-center" });
       }
     } catch (error) {
       toast.error("Error: " + error.message, { position: "top-center" });
