@@ -238,7 +238,7 @@ function RepairList() {
 
     const handleSaveRemarks = async () => {
         try {
-            const enteredBy = localStorage.getItem("username") || "Admin";
+            const enteredBy = localStorage.getItem("name") || "Admin";
             const isAdmin = localStorage.getItem("role") === "admin";
 
             const res = await fetch(`https://proccms-backend.onrender.com/api/repair-requests/${selectedRequest.id}/remarks`, {
@@ -711,7 +711,7 @@ function RepairList() {
                                                         <tr key={index}>
                                                             <td>{index + 1}</td>
                                                             <td>{remark.text}</td>
-                                                            <td>{remark.name}</td>
+                                                            <td>{remark.enteredBy}</td>
                                                             <td>{new Date(remark.date).toLocaleString()}</td>
                                                         </tr>
                                                     ))
