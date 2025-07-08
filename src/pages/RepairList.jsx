@@ -711,7 +711,7 @@ function RepairList() {
                                                         <tr key={index}>
                                                             <td>{index + 1}</td>
                                                             <td>{remark.text}</td>
-                                                            <td>{remark.enteredBy}</td>
+                                                            <td>{remark.name}</td>
                                                             <td>{new Date(remark.date).toLocaleString()}</td>
                                                         </tr>
                                                     ))
