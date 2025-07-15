@@ -230,13 +230,16 @@ const getStyles = (width) => {
       borderRadius: "4px",
       cursor: "pointer",
     },
+    
     summary: {
       display: "flex",
       gap: "12px",
       marginBottom: "10px",
       fontWeight: "bold",
-      flexWrap: "wrap",
+      justifyContent: "center", // ⬅️ centers the line
+      flexWrap: "nowrap",       // ⬅️ prevents wrapping
     },
+
     tableScroll: {
       overflowX: "auto",
     },
