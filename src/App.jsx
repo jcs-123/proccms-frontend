@@ -26,6 +26,8 @@ import AssignedBookings from "./pages/AssignedBookings";
 import Login from "./pages/LoginPage";
 import VehicleGetdata from "./pages/VehicleGetdata";
 
+import UploadData from "./pages/UploadData";
+
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
   const [role, setRole] = useState(localStorage.getItem("role"));
@@ -74,6 +76,8 @@ function App() {
             >
               <Routes>
                 {/* Admin Routes */}
+                <Route path="/upload-data" element={<UploadData />} />
+
                 {role === "admin" && (
                   <>
                     <Route path="/dashboard" element={<Dashboard />} />

@@ -305,8 +305,31 @@ function RepairList() {
 
     const renderPagination = () => {
         const pageNumbers = [];
+        const maxVisiblePages = 5; // Maximum number of page buttons to show at once
 
-        for (let i = 1; i <= totalPages; i++) {
+        // Calculate the range of pages to display
+        let startPage, endPage;
+        if (totalPages <= maxVisiblePages) {
+            // Show all pages if total pages is less than max visible
+            startPage = 1;
+            endPage = totalPages;
+        } else {
+            // Calculate start and end pages to show
+            const half = Math.floor(maxVisiblePages / 2);
+            if (currentPage <= half + 1) {
+                startPage = 1;
+                endPage = maxVisiblePages;
+            } else if (currentPage >= totalPages - half) {
+                startPage = totalPages - maxVisiblePages + 1;
+                endPage = totalPages;
+            } else {
+                startPage = currentPage - half;
+                endPage = currentPage + half;
+            }
+        }
+
+        // Generate page numbers
+        for (let i = startPage; i <= endPage; i++) {
             pageNumbers.push(
                 <Pagination.Item
                     key={i}
@@ -317,13 +340,44 @@ function RepairList() {
                 </Pagination.Item>
             );
         }
+
         return (
             <Pagination className="justify-content-center">
-                <Pagination.First onClick={() => setCurrentPage(1)} disabled={currentPage === 1} />
-                <Pagination.Prev onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1} />
+                <Pagination.First
+                    onClick={() => setCurrentPage(1)}
+                    disabled={currentPage === 1}
+                />
+                <Pagination.Prev
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                />
+
+                {startPage > 1 && (
+                    <>
+                        <Pagination.Item onClick={() => setCurrentPage(1)}>1</Pagination.Item>
+                        {startPage > 2 && <Pagination.Ellipsis disabled />}
+                    </>
+                )}
+
                 {pageNumbers}
-                <Pagination.Next onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages} />
-                <Pagination.Last onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} />
+
+                {endPage < totalPages && (
+                    <>
+                        {endPage < totalPages - 1 && <Pagination.Ellipsis disabled />}
+                        <Pagination.Item onClick={() => setCurrentPage(totalPages)}>
+                            {totalPages}
+                        </Pagination.Item>
+                    </>
+                )}
+
+                <Pagination.Next
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                />
+                <Pagination.Last
+                    onClick={() => setCurrentPage(totalPages)}
+                    disabled={currentPage === totalPages}
+                />
             </Pagination>
         );
     };
