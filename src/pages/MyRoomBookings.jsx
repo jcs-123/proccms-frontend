@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Form, Button, Row, Col, InputGroup, Modal, Container } from 'react-bootstrap';
+import { Table, Form, Button, Row, Col, InputGroup, Modal, Container, Pagination } from 'react-bootstrap';
 import axios from 'axios';
 import './RoomBookingList.css';
-
 
 function UserRoomBookingList() {
   const [filters, setFilters] = useState({
@@ -22,10 +21,13 @@ function UserRoomBookingList() {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [remarks, setRemarks] = useState('');
 
-  // ✅ Get current user info (assumes it's stored in localStorage after login)
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10); // Number of items per page
+
+  // Get current user info
   const currentUsername = localStorage.getItem('name');
   const currentDepartment = localStorage.getItem('department');
-
 
   const fetchBookings = async () => {
     setLoading(true);
@@ -42,6 +44,7 @@ function UserRoomBookingList() {
 
       setBookings(userBookings);
       setError(null);
+      setCurrentPage(1); // Reset to first page when new data is fetched
     } catch (err) {
       setError('Failed to fetch bookings');
       console.error(err);
@@ -49,7 +52,6 @@ function UserRoomBookingList() {
       setLoading(false);
     }
   };
-
 
   useEffect(() => {
     fetchBookings();
@@ -77,16 +79,15 @@ function UserRoomBookingList() {
       return;
     }
     try {
-      // Send remarks to backend API as admin remarks
       await axios.post(`https://proccms-backend.onrender.com/api/room-booking/${selectedBooking._id}/user-remarks`, {
         remarks,
       });
-      alert('user remarks saved successfully!');
+      alert('User remarks saved successfully!');
       setRemarksModalShow(false);
       fetchBookings(); // Refresh the list
     } catch (error) {
       console.error('Failed to save user remarks', error);
-      alert('Failed to save admin remarks. Please try again.');
+      alert('Failed to save user remarks. Please try again.');
     }
   };
 
@@ -126,6 +127,29 @@ function UserRoomBookingList() {
 
     return true;
   });
+
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredBookings.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredBookings.length / itemsPerPage);
+
+  // Change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // Pagination items
+  let paginationItems = [];
+  for (let number = 1; number <= totalPages; number++) {
+    paginationItems.push(
+      <Pagination.Item
+        key={number}
+        active={number === currentPage}
+        onClick={() => paginate(number)}
+      >
+        {number}
+      </Pagination.Item>
+    );
+  }
 
   if (loading)
     return (
@@ -221,14 +245,14 @@ function UserRoomBookingList() {
             </tr>
           </thead>
           <tbody>
-            {filteredBookings.length === 0 ? (
+            {currentItems.length === 0 ? (
               <tr>
                 <td colSpan="6" className="text-center">No records found.</td>
               </tr>
             ) : (
-              filteredBookings.map((booking, index) => (
+              currentItems.map((booking, index) => (
                 <tr key={booking._id}>
-                  <td>{index + 1}</td>
+                  <td>{indexOfFirstItem + index + 1}</td>
                   <td>{booking.requestedDate || booking.createdAt?.slice(0, 10)}</td>
                   <td>{booking.bookingDateTime || `${booking.date || ''} – ${booking.timeFrom || ''} to ${booking.timeTo || ''}`}</td>
                   <td>{booking.room || booking.roomType}</td>
@@ -257,6 +281,23 @@ function UserRoomBookingList() {
           </tbody>
         </Table>
       </div>
+
+      {/* Pagination */}
+      {filteredBookings.length > itemsPerPage && (
+        <div className="d-flex justify-content-center mt-4">
+          <Pagination>
+            <Pagination.Prev 
+              onClick={() => setCurrentPage(prev => (prev > 1 ? prev - 1 : prev))} 
+              disabled={currentPage === 1} 
+            />
+            {paginationItems}
+            <Pagination.Next 
+              onClick={() => setCurrentPage(prev => (prev < totalPages ? prev + 1 : prev))} 
+              disabled={currentPage === totalPages} 
+            />
+          </Pagination>
+        </div>
+      )}
 
       {/* View Modal */}
       <Modal show={viewModalShow} onHide={() => setViewModalShow(false)} size="lg" centered>

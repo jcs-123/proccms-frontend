@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Container, Row, Col, Form, Badge } from 'react-bootstrap';
+import { Table, Button, Container, Row, Col, Form, Badge, Stack } from 'react-bootstrap';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -63,65 +63,75 @@ const UserDashboard = () => {
     const statusLower = status.toLowerCase();
 
     if (statusLower === 'assigned' || statusLower === 'cancelled' || statusLower === 'canceled') {
-      return <Badge bg="danger">{status}</Badge>; // 🔴 red
+      return <Badge bg="danger">{status}</Badge>;
     }
 
     if (statusLower === 'booked' || statusLower === 'completed') {
-      return <Badge bg="success">{status}</Badge>; // 🟢 green
+      return <Badge bg="success">{status}</Badge>;
     }
 
-    return <Badge bg="secondary">{status}</Badge>; // default
+    return <Badge bg="secondary">{status}</Badge>;
   };
 
   return (
-    <Container className="pt-4 mt-3" fluid>
-      <div className="bg-white p-4 shadow-sm rounded mb-4">
-        <Row>
-          <Col xs={12} className="d-flex justify-content-between align-items-center">
-            <h4 className="fw-bold mb-0">User Dashboard</h4>
+    <Container className="py-5" fluid>
+      <div className="bg-white p-3 shadow-sm rounded mb-3">
+        <Row className="align-items-center">
+          <Col xs={12} md={6}>
+            <h4 className="fw-bold mb-2 mb-md-0">User Dashboard</h4>
+          </Col>
+          <Col xs={12} md={6} className="text-md-end">
             <span className="fw-semibold text-muted">Department: {department}</span>
           </Col>
         </Row>
       </div>
 
       {/* Repair Requests Section */}
-      <Row className="mb-4">
+      <Row className="mb-3">
         <Col xs={12}>
-          <div className="bg-white p-4 shadow-sm rounded">
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <h5 className="mb-0">Last 1 Month Repair Requests</h5>
-              <div>
-                <Button variant="success" className="me-2" onClick={() => navigate('/repair-request')}>
-                  New Request
-                </Button>
-                <Button variant="primary" onClick={() => navigate('/my-repair-requests')}>
-                  View All
-                </Button>
-              </div>
-            </div>
+          <div className="bg-white p-3 shadow-sm rounded">
+            <Row className="align-items-center mb-3">
+              <Col xs={12} md={6}>
+                <h5 className="mb-2 mb-md-0">Last 1 Month Repair Requests</h5>
+              </Col>
+              <Col xs={12} md={6}>
+                <Stack direction="horizontal" gap={2} className="justify-content-md-end">
+                  <Button variant="success" size="sm" onClick={() => navigate('/repair-request')}>
+                    New Request
+                  </Button>
+                  <Button variant="primary" size="sm" onClick={() => navigate('/my-repair-requests')}>
+                    View All
+                  </Button>
+                </Stack>
+              </Col>
+            </Row>
 
-            <Row className="mb-3">
-              <Col md={3}>
+            <Row className="mb-3 g-2">
+              <Col xs={12} sm={6} md={4} lg={3}>
                 <Form.Control
                   type="date"
                   value={repairDateFrom}
                   onChange={(e) => setRepairDateFrom(e.target.value)}
+                  size="sm"
                 />
               </Col>
-              <Col md={3}>
+              <Col xs={12} sm={6} md={4} lg={3}>
                 <Form.Control
                   type="date"
                   value={repairDateTo}
                   onChange={(e) => setRepairDateTo(e.target.value)}
+                  size="sm"
                 />
               </Col>
-              <Col md={2}>
-                <Button onClick={fetchMyRepairRequests}>Search</Button>
+              <Col xs={12} sm={6} md={4} lg={2}>
+                <Button onClick={fetchMyRepairRequests} size="sm" className="w-100">
+                  Search
+                </Button>
               </Col>
             </Row>
 
             <div className="table-responsive">
-              <Table striped bordered hover size="sm">
+              <Table striped bordered hover size="sm" className="mb-0">
                 <thead className="table-light">
                   <tr>
                     <th>#</th>
@@ -135,7 +145,7 @@ const UserDashboard = () => {
                     <tr key={item._id}>
                       <td>{idx + 1}</td>
                       <td>{new Date(item.createdAt).toLocaleDateString()}</td>
-                      <td>{item.description}</td>
+                      <td className="text-truncate" style={{maxWidth: '200px'}}>{item.description}</td>
                       <td>{renderStatusBadge(item.status)}</td>
                     </tr>
                   )) : (
@@ -153,41 +163,49 @@ const UserDashboard = () => {
       {/* Room Bookings Section */}
       <Row>
         <Col xs={12}>
-          <div className="bg-white p-4 shadow-sm rounded">
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <h5 className="mb-0">Last 1 Month Room Bookings</h5>
-              <div>
-                <Button variant="success" className="me-2" onClick={() => navigate('/room-booking')}>
-                  New Booking
-                </Button>
-                <Button variant="warning" onClick={() => navigate('/my-bookings')}>
-                  View All
-                </Button>
-              </div>
-            </div>
+          <div className="bg-white p-3 shadow-sm rounded">
+            <Row className="align-items-center mb-3">
+              <Col xs={12} md={6}>
+                <h5 className="mb-2 mb-md-0">Last 1 Month Room Bookings</h5>
+              </Col>
+              <Col xs={12} md={6}>
+                <Stack direction="horizontal" gap={2} className="justify-content-md-end">
+                  <Button variant="success" size="sm" onClick={() => navigate('/room-booking')}>
+                    New Booking
+                  </Button>
+                  <Button variant="warning" size="sm" onClick={() => navigate('/my-bookings')}>
+                    View All
+                  </Button>
+                </Stack>
+              </Col>
+            </Row>
 
-            <Row className="mb-3">
-              <Col md={3}>
+            <Row className="mb-3 g-2">
+              <Col xs={12} sm={6} md={4} lg={3}>
                 <Form.Control
                   type="date"
                   value={bookingDateFrom}
                   onChange={(e) => setBookingDateFrom(e.target.value)}
+                  size="sm"
                 />
               </Col>
-              <Col md={3}>
+              <Col xs={12} sm={6} md={4} lg={3}>
                 <Form.Control
                   type="date"
                   value={bookingDateTo}
                   onChange={(e) => setBookingDateTo(e.target.value)}
+                  size="sm"
                 />
               </Col>
-              <Col md={2}>
-                <Button onClick={fetchMyRoomBookings}>Search</Button>
+              <Col xs={12} sm={6} md={4} lg={2}>
+                <Button onClick={fetchMyRoomBookings} size="sm" className="w-100">
+                  Search
+                </Button>
               </Col>
             </Row>
 
             <div className="table-responsive">
-              <Table striped bordered hover size="sm">
+              <Table striped bordered hover size="sm" className="mb-0">
                 <thead className="table-light">
                   <tr>
                     <th>#</th>
@@ -201,7 +219,7 @@ const UserDashboard = () => {
                     <tr key={item._id}>
                       <td>{idx + 1}</td>
                       <td>{new Date(item.createdAt).toLocaleDateString()}</td>
-                      <td>{item.purpose || "---"}</td>
+                      <td className="text-truncate" style={{maxWidth: '200px'}}>{item.purpose || "---"}</td>
                       <td>{renderStatusBadge(item.status)}</td>
                     </tr>
                   )) : (

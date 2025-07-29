@@ -14,6 +14,8 @@ function StaffRepairRequestList() {
   const [showViewModal, setShowViewModal] = useState(false);
   const [allRemarksModal, setAllRemarksModal] = useState(false);
   const [allRemarks, setAllRemarks] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const username = localStorage.getItem("name");
   const role = localStorage.getItem("role");
@@ -36,7 +38,7 @@ function StaffRepairRequestList() {
         id: req._id,
         date: new Date(req.createdAt).toISOString().split("T")[0],
         requestFrom: req.username,
-        department: req.department || "Unknown", // <-- Add this
+        department: req.department || "Unknown",
         details: req.description,
         type: req.isNewRequirement ? "New Requirement" : "Repair Request",
         fileUrl: req.fileUrl ? `https://proccms-backend.onrender.com${req.fileUrl}` : null,
@@ -99,7 +101,6 @@ function StaffRepairRequestList() {
   const handleAllRemarksClick = async () => {
     try {
       const res = await fetch(`https://proccms-backend.onrender.com/api/repair-requests/all-remarks`);
-
       if (!res.ok) throw new Error("Failed to fetch all remarks");
       const data = await res.json();
       setAllRemarks(data);
@@ -140,7 +141,14 @@ function StaffRepairRequestList() {
       filteredList = filteredList.filter((r) => new Date(r.date) <= new Date(toDate));
     }
     setFiltered(filteredList);
+    setCurrentPage(1); // Reset to first page
   };
+
+  // Pagination calculations
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filtered.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
 
   return (
     <Container className="mt-4">
@@ -192,21 +200,12 @@ function StaffRepairRequestList() {
           </tr>
         </thead>
         <tbody>
-          {filtered.length === 0 ? (
+          {currentItems.length === 0 ? (
             <tr><td colSpan={10}>No repair requests found.</td></tr>
           ) : (
-            filtered.map((req, idx) => (
+            currentItems.map((req, idx) => (
               <tr key={req.id}>
-                <td style={{
-                  width: "100px",
-                  textAlign: "center",
-                  verticalAlign: "middle",
-                  fontWeight: "bold",
-                  fontSize: "15px"
-                }}>
-                  {idx + 1}
-                </td>
-
+                <td>{(currentPage - 1) * itemsPerPage + idx + 1}</td>
                 <td style={{
                   width: "200px",
                   textAlign: "center",
@@ -292,6 +291,29 @@ function StaffRepairRequestList() {
           )}
         </tbody>
       </Table>
+
+      {/* Pagination Controls */}
+      <div className="d-flex justify-content-between align-items-center mt-3">
+        <Button
+          variant="outline-secondary"
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          ⬅ Prev
+        </Button>
+
+        <span>
+          Page <strong>{currentPage}</strong> of <strong>{totalPages}</strong>
+        </span>
+
+        <Button
+          variant="outline-secondary"
+          onClick={() => setCurrentPage((prev) => (prev < totalPages ? prev + 1 : prev))}
+          disabled={currentPage >= totalPages}
+        >
+          Next ➡
+        </Button>
+      </div>
 
       {/* View Modal */}
       <Modal show={showViewModal} onHide={() => setShowViewModal(false)} centered size="lg">
@@ -381,18 +403,12 @@ function StaffRepairRequestList() {
                     <td>{i + 1}</td>
                     <td>{r.requestId}</td>
                     <td>{r.enteredBy}</td>
-                    <td style={{
-                      whiteSpace: "normal",
-                      wordBreak: "break-word",
-                      lineHeight: "1.5",
-                      fontSize: "14px",
-                      padding: "8px"
-                    }}>
+                    <td style={{ whiteSpace: "normal", wordBreak: "break-word", lineHeight: "1.5", fontSize: "14px" }}>
                       {r.text}
                     </td>
-                    <td>{new Date(r.date).toLocaleString('en-IN', {
-                      day: '2-digit', month: 'short', year: 'numeric',
-                      hour: '2-digit', minute: '2-digit', hour12: true
+                    <td>{new Date(r.date).toLocaleString("en-IN", {
+                      day: "2-digit", month: "short", year: "numeric",
+                      hour: "2-digit", minute: "2-digit", hour12: true
                     })}</td>
                   </tr>
                 ))}
@@ -404,7 +420,6 @@ function StaffRepairRequestList() {
           <Button variant="secondary" onClick={() => setAllRemarksModal(false)}>Close</Button>
         </Modal.Footer>
       </Modal>
-
     </Container>
   );
 }
@@ -414,11 +429,9 @@ export default StaffRepairRequestList;
 
 
 
+
 // import React, { useEffect, useState } from "react";
-// import { Container, Table, Form, Row, Col, Button, Badge } from "react-bootstrap";
-// import { Modal } from "react-bootstrap";
-
-
+// import { Container, Table, Form, Row, Col, Button, Badge, Modal } from "react-bootstrap";
 
 // function StaffRepairRequestList() {
 //   const [requests, setRequests] = useState([]);
@@ -431,20 +444,50 @@ export default StaffRepairRequestList;
 //   const [remarksList, setRemarksList] = useState([]);
 //   const [newRemark, setNewRemark] = useState("");
 //   const [showViewModal, setShowViewModal] = useState(false);
+//   const [allRemarksModal, setAllRemarksModal] = useState(false);
+//   const [allRemarks, setAllRemarks] = useState([]);
 
-
-
-//   const username = localStorage.getItem("username");
+//   const username = localStorage.getItem("name");
 //   const role = localStorage.getItem("role");
 
+//   useEffect(() => {
+//     if (role !== "staff") {
+//       alert("Unauthorized access");
+//       return;
+//     }
+//     fetchAssignedRequests();
+//   }, []);
 
+//   const fetchAssignedRequests = async () => {
+//     try {
+//       const res = await fetch(`https://proccms-backend.onrender.com/api/repair-requests?role=staff&username=${username}`);
+//       if (!res.ok) throw new Error("Failed to fetch requests");
+
+//       const data = await res.json();
+//       const formatted = data.map((req) => ({
+//         id: req._id,
+//         date: new Date(req.createdAt).toISOString().split("T")[0],
+//         requestFrom: req.username,
+//         department: req.department || "Unknown", // <-- Add this
+//         details: req.description,
+//         type: req.isNewRequirement ? "New Requirement" : "Repair Request",
+//         fileUrl: req.fileUrl ? `https://proccms-backend.onrender.com${req.fileUrl}` : null,
+//         status: req.status || "Pending",
+//         assignedTo: req.assignedTo || "Not Assigned",
+//       }));
+
+//       setRequests(formatted);
+//       setFiltered(formatted);
+//     } catch (err) {
+//       alert(err.message);
+//     }
+//   };
 
 //   const handleView = async (request) => {
 //     try {
-//       const res = await fetch(`http://localhost:5000/api/repair-requests/${request.id}/remarks`);
+//       const res = await fetch(`https://proccms-backend.onrender.com/api/repair-requests/${request.id}/remarks`);
 //       if (!res.ok) throw new Error("Failed to fetch remarks");
 //       const remarks = await res.json();
-
 //       setSelectedRequest(request);
 //       setRemarksList(remarks);
 //       setShowViewModal(true);
@@ -453,10 +496,9 @@ export default StaffRepairRequestList;
 //     }
 //   };
 
-
 //   const handleRemarks = async (request) => {
 //     try {
-//       const res = await fetch(`http://localhost:5000/api/repair-requests/${request.id}/remarks`);
+//       const res = await fetch(`https://proccms-backend.onrender.com/api/repair-requests/${request.id}/remarks`);
 //       if (!res.ok) throw new Error("Failed to fetch remarks");
 //       const remarks = await res.json();
 //       setRemarksList(remarks);
@@ -471,7 +513,7 @@ export default StaffRepairRequestList;
 //     if (!newRemark.trim()) return;
 
 //     try {
-//       const res = await fetch(`http://localhost:5000/api/repair-requests/${selectedRequest.id}/remarks`, {
+//       const res = await fetch(`https://proccms-backend.onrender.com/api/repair-requests/${selectedRequest.id}/remarks`, {
 //         method: "POST",
 //         headers: { "Content-Type": "application/json" },
 //         body: JSON.stringify({ text: newRemark, enteredBy: username }),
@@ -486,34 +528,14 @@ export default StaffRepairRequestList;
 //     }
 //   };
 
-
-//   useEffect(() => {
-//     if (role !== "staff") {
-//       alert("Unauthorized access");
-//       return;
-//     }
-//     fetchAssignedRequests();
-//   }, []);
-
-//   const fetchAssignedRequests = async () => {
+//   const handleAllRemarksClick = async () => {
 //     try {
-//       const params = new URLSearchParams({ role: "staff", username });
-//       const res = await fetch(`http://localhost:5000/api/repair-requests?${params.toString()}`);
-//       if (!res.ok) throw new Error("Failed to fetch requests");
+//       const res = await fetch(`https://proccms-backend.onrender.com/api/repair-requests/all-remarks`);
 
+//       if (!res.ok) throw new Error("Failed to fetch all remarks");
 //       const data = await res.json();
-//       const formatted = data.map((req) => ({
-//         id: req._id,
-//         date: new Date(req.createdAt).toISOString().split("T")[0],
-//         requestFrom: req.username,
-//         details: req.description,
-//         type: req.isNewRequirement ? "New Requirement" : "Repair Request",
-//         fileUrl: req.fileUrl ? `http://localhost:5000${req.fileUrl}` : null,
-//         status: req.status || "Pending",
-//         assignedTo: req.assignedTo || "Not Assigned",
-//       }));
-//       setRequests(formatted);
-//       setFiltered(formatted);
+//       setAllRemarks(data);
+//       setAllRemarksModal(true);
 //     } catch (err) {
 //       alert(err.message);
 //     }
@@ -521,7 +543,7 @@ export default StaffRepairRequestList;
 
 //   const handleStatusChange = async (id, newStatus) => {
 //     try {
-//       const res = await fetch(`http://localhost:5000/api/repair-requests/${id}`, {
+//       const res = await fetch(`https://proccms-backend.onrender.com/api/repair-requests/${id}`, {
 //         method: "PATCH",
 //         headers: { "Content-Type": "application/json" },
 //         body: JSON.stringify({ status: newStatus }),
@@ -540,19 +562,15 @@ export default StaffRepairRequestList;
 
 //   const applyFilters = (list = requests) => {
 //     let filteredList = list;
-
 //     if (statusFilter !== "All") {
 //       filteredList = filteredList.filter((r) => r.status === statusFilter);
 //     }
-
 //     if (fromDate) {
 //       filteredList = filteredList.filter((r) => new Date(r.date) >= new Date(fromDate));
 //     }
-
 //     if (toDate) {
 //       filteredList = filteredList.filter((r) => new Date(r.date) <= new Date(toDate));
 //     }
-
 //     setFiltered(filteredList);
 //   };
 
@@ -562,24 +580,14 @@ export default StaffRepairRequestList;
 //         Repair Request List
 //       </h4>
 
-
-//       {/* Filter Section */}
 //       <Row className="mb-3 align-items-end">
 //         <Col md={3}>
 //           <Form.Label>Date from</Form.Label>
-//           <Form.Control
-//             type="date"
-//             value={fromDate}
-//             onChange={(e) => setFromDate(e.target.value)}
-//           />
+//           <Form.Control type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
 //         </Col>
 //         <Col md={3}>
 //           <Form.Label>Date to</Form.Label>
-//           <Form.Control
-//             type="date"
-//             value={toDate}
-//             onChange={(e) => setToDate(e.target.value)}
-//           />
+//           <Form.Control type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
 //         </Col>
 //         <Col md={3}>
 //           <Form.Label>Status</Form.Label>
@@ -594,13 +602,12 @@ export default StaffRepairRequestList;
 //           <Button variant="primary" className="w-100 mb-2" onClick={() => applyFilters()}>
 //             Search
 //           </Button>
-//           <Button variant="success" className="w-100" onClick={() => alert("Remarks Clicked")}>
+//           <Button variant="success" className="w-100" onClick={handleAllRemarksClick}>
 //             Remarks
 //           </Button>
 //         </Col>
 //       </Row>
 
-//       {/* Table Section */}
 //       <Table striped bordered hover responsive className="text-center align-middle">
 //         <thead className="table-light">
 //           <tr>
@@ -614,72 +621,91 @@ export default StaffRepairRequestList;
 //             <th>Status</th>
 //             <th>Update</th>
 //             <th>Actions</th>
-
 //           </tr>
 //         </thead>
 //         <tbody>
 //           {filtered.length === 0 ? (
-//             <tr>
-//               <td colSpan={9}>No repair requests found.</td>
-//             </tr>
+//             <tr><td colSpan={10}>No repair requests found.</td></tr>
 //           ) : (
 //             filtered.map((req, idx) => (
 //               <tr key={req.id}>
-//                 <td>{idx + 1}</td>
-//                 <td>{req.date}</td>
-//                 <td>{req.requestFrom}</td>
-//                 <td
-//                   style={{
-//                     width: "260px",
-//                     maxWidth: "260px",
-//                     minWidth: "240px",              // Ensure it doesn't shrink too much
-//                     whiteSpace: "pre-wrap",
-//                     wordBreak: "break-word",
-//                     textAlign: "justify",
-//                     verticalAlign: "top",           // Align text to top if content is tall
-//                     fontSize: "15px",
-//                     lineHeight: "1.7",
-//                     padding: "10px 12px",           // Balanced horizontal & vertical spacing
-//                     fontWeight: "normal",
-//                     backgroundColor: "#fafafa",     // Optional: subtle background for readability
-//                   }}
-//                 >
+//                 <td style={{
+//                   width: "100px",
+//                   textAlign: "center",
+//                   verticalAlign: "middle",
+//                   fontWeight: "bold",
+//                   fontSize: "15px"
+//                 }}>
+//                   {idx + 1}
+//                 </td>
+
+//                 <td style={{
+//                   width: "200px",
+//                   textAlign: "center",
+//                   verticalAlign: "middle",
+//                   fontSize: "15px",
+//                   whiteSpace: "nowrap"
+//                 }}>
+//                   {req.date}
+//                 </td>
+
+//                 <td style={{
+//                   width: "300px",
+//                   minWidth: "100px",
+//                   maxWidth: "100px",
+//                   textAlign: "left",             // aligns text to left inside cell
+//                   verticalAlign: "middle",       // aligns text vertically to middle
+//                   fontSize: "16px",
+//                   fontWeight: "normal",
+//                   wordBreak: "break-word",
+//                   whiteSpace: "normal",          // allows wrapping
+//                   lineHeight: "1.6",
+//                   backgroundColor: "#fafafa",
+//                   padding: "12px 14px"
+//                 }}>
+//                   <strong>{req.requestFrom}</strong><br />
+//                   <span style={{ fontSize: "14px", color: "#666" }}>{req.department}</span>
+//                 </td>
+
+
+//                 <td style={{
+//                   minWidth: "260px",
+//                   maxWidth: "300px",
+//                   whiteSpace: "pre-wrap",
+//                   wordBreak: "break-word",
+//                   textAlign: "justify",
+//                   verticalAlign: "top",
+//                   fontSize: "15px",
+//                   lineHeight: "1.6",
+//                   padding: "10px 14px",
+//                   backgroundColor: "#fafafa"
+//                 }}>
 //                   {req.details}
 //                 </td>
 
 //                 <td>{req.type}</td>
 //                 <td>
-//                   {req.fileUrl ? (
-//                     <a href={req.fileUrl} target="_blank" rel="noopener noreferrer">
-//                       Image
-//                     </a>
-//                   ) : (
-//                     "No File"
-//                   )}
+//                   {req.fileUrl ? <a href={req.fileUrl} target="_blank" rel="noopener noreferrer">Image</a> : "No File"}
 //                 </td>
 //                 <td>{req.assignedTo}</td>
-//                 <td>
-//                   <Badge bg={
-//                     req.status === "Pending" ? "dark" :
-//                       req.status === "Assigned" ? "warning" :
-//                         req.status === "Completed" ? "success" : "dark"
-//                   }>
-//                     {req.status}
-//                   </Badge>
-//                 </td>
-//                 <td
-//                   style={{
-//                     width: "125px",            // You can adjust this to your needs
-//                     maxWidth: "160px",
-//                     padding: "8px",
-//                     textAlign: "center",
-//                   }}
-//                 >
+//                 <td><Badge bg={
+//                   req.status === "Pending" ? "dark" :
+//                     req.status === "Assigned" ? "warning" :
+//                       req.status === "Completed" ? "success" : "dark"
+//                 }>{req.status}</Badge></td>
+//                 <td style={{
+//                   minWidth: "129px",
+//                   verticalAlign: "middle",
+//                   padding: "8px 10px"
+//                 }}>
 //                   <Form.Select
 //                     size="sm"
-//                     style={{ width: "100%" }}   // Ensures it fits the td nicely
 //                     value={req.status}
 //                     onChange={(e) => handleStatusChange(req.id, e.target.value)}
+//                     style={{
+//                       fontSize: "14px",
+//                       padding: "4px 8px"
+//                     }}
 //                   >
 //                     <option>Pending</option>
 //                     <option>Assigned</option>
@@ -689,139 +715,70 @@ export default StaffRepairRequestList;
 
 //                 <td style={{ minWidth: "140px" }}>
 //                   <div className="d-grid gap-2">
-//                     <Button
-//                       variant="outline-primary"
-//                       size="sm"
-//                       onClick={() => handleView(req)}
-//                     >
-//                       <i className="bi bi-eye"></i> View
-//                     </Button>
-//                     <Button
-//                       variant="outline-warning"
-//                       size="sm"
-//                       onClick={() => handleRemarks(req)}
-//                     >
-//                       <i className="bi bi-plus-circle"></i> Remarks
-//                     </Button>
+//                     <Button variant="outline-primary" size="sm" onClick={() => handleView(req)}>👁️ View</Button>
+//                     <Button variant="outline-warning" size="sm" onClick={() => handleRemarks(req)}>📝 Remarks</Button>
 //                   </div>
 //                 </td>
-
-
-
 //               </tr>
 //             ))
 //           )}
 //         </tbody>
-
 //       </Table>
+
 //       {/* View Modal */}
 //       <Modal show={showViewModal} onHide={() => setShowViewModal(false)} centered size="lg">
-//         <Modal.Header closeButton>
-//           <Modal.Title>Repair Request Details</Modal.Title>
-//         </Modal.Header>
+//         <Modal.Header closeButton><Modal.Title>Repair Request Details</Modal.Title></Modal.Header>
 //         <Modal.Body>
 //           {selectedRequest && (
 //             <>
-//               {/* Request Details Table */}
-//               <table className="table table-bordered">
+//               <Table bordered>
 //                 <tbody>
-//                   <tr>
-//                     <th>ID</th>
-//                     <td>{selectedRequest.id}</td>
-//                   </tr>
-//                   <tr>
-//                     <th>Date</th>
-//                     <td>{selectedRequest.date}</td>
-//                   </tr>
-//                   <tr>
-//                     <th>Requested By</th>
-//                     <td>{selectedRequest.requestFrom}</td>
-//                   </tr>
-//                   <tr>
-//                     <th>Details</th>
-//                     <td>{selectedRequest.details}</td>
-//                   </tr>
-//                   <tr>
-//                     <th>Type</th>
-//                     <td>{selectedRequest.type}</td>
-//                   </tr>
-//                   <tr>
-//                     <th>Status</th>
-//                     <td>{selectedRequest.status}</td>
-//                   </tr>
-//                   <tr>
-//                     <th>Assigned To</th>
-//                     <td>{selectedRequest.assignedTo || 'Not Assigned'}</td>
-//                   </tr>
+//                   <tr><th>ID</th><td>{selectedRequest.id}</td></tr>
+//                   <tr><th>Date</th><td>{selectedRequest.date}</td></tr>
+//                   <tr><th>Requested By</th><td>{selectedRequest.requestFrom}</td></tr>
+//                   <tr><th>Details</th><td>{selectedRequest.details}</td></tr>
+//                   <tr><th>Type</th><td>{selectedRequest.type}</td></tr>
+//                   <tr><th>Status</th><td>{selectedRequest.status}</td></tr>
+//                   <tr><th>Assigned To</th><td>{selectedRequest.assignedTo}</td></tr>
 //                   {selectedRequest.fileUrl && (
-//                     <tr>
-//                       <th>Attachment</th>
-//                       <td>
-//                         <a href={selectedRequest.fileUrl} target="_blank" rel="noopener noreferrer">
-//                           View File
-//                         </a>
-//                       </td>
-//                     </tr>
+//                     <tr><th>Attachment</th><td><a href={selectedRequest.fileUrl} target="_blank" rel="noopener noreferrer">View File</a></td></tr>
 //                   )}
 //                 </tbody>
-//               </table>
-
-//               {/* Remarks Section */}
+//               </Table>
 //               <h5 className="mt-4">Remarks</h5>
-//               {remarksList.length === 0 ? (
-//                 <p className="text-muted">No remarks added yet.</p>
-//               ) : (
-//                 <div className="table-responsive">
-//                   <table className="table table-striped table-bordered">
-//                     <thead>
-//                       <tr>
-//                         <th>#</th>
-//                         <th>Entered By</th>
-//                         <th>Remark</th>
-//                         <th>Date</th>
+//               {remarksList.length === 0 ? <p className="text-muted">No remarks added yet.</p> : (
+//                 <Table bordered size="sm">
+//                   <thead><tr><th>#</th><th>Entered By</th><th>Remark</th><th>Date</th></tr></thead>
+//                   <tbody>
+//                     {remarksList.map((remark, index) => (
+//                       <tr key={index}>
+//                         <td>{index + 1}</td>
+//                         <td>{remark.enteredBy}</td>
+//                         <td>{remark.text}</td>
+//                         <td>{new Date(remark.date).toLocaleString()}</td>
 //                       </tr>
-//                     </thead>
-//                     <tbody>
-//                       {remarksList.map((remark, index) => (
-//                         <tr key={index}>
-//                           <td>{index + 1}</td>
-//                           <td>{remark.enteredBy}</td>
-//                           <td>{remark.text}</td>
-//                           <td>{new Date(remark.date).toLocaleString()}</td>
-//                         </tr>
-//                       ))}
-//                     </tbody>
-//                   </table>
-//                 </div>
+//                     ))}
+//                   </tbody>
+//                 </Table>
 //               )}
 //             </>
 //           )}
 //         </Modal.Body>
-//         <Modal.Footer>
-//           <Button variant="secondary" onClick={() => setShowViewModal(false)}>
-//             Close
-//           </Button>
-//         </Modal.Footer>
+//         <Modal.Footer><Button variant="secondary" onClick={() => setShowViewModal(false)}>Close</Button></Modal.Footer>
 //       </Modal>
 
-
-//       {/* Remarks Modal */}
+//       {/* Add Remark Modal */}
 //       <Modal show={showRemarksModal} onHide={() => setShowRemarksModal(false)} centered>
-//         <Modal.Header closeButton>
-//           <Modal.Title>Remarks - Request ID: {selectedRequest?.id}</Modal.Title>
-//         </Modal.Header>
+//         <Modal.Header closeButton><Modal.Title>Add Remark</Modal.Title></Modal.Header>
 //         <Modal.Body>
-
-
-//           {/* Add New Remark */}
 //           <Form.Group controlId="newRemark">
-//             <Form.Label>Add New Remark</Form.Label>
+//             <Form.Label>New Remark</Form.Label>
 //             <Form.Control
 //               as="textarea"
 //               rows={2}
-//               placeholder="Type your remark here..."
 //               value={newRemark}
 //               onChange={(e) => setNewRemark(e.target.value)}
+//               placeholder="Enter your remark"
 //             />
 //           </Form.Group>
 //         </Modal.Body>
@@ -831,9 +788,56 @@ export default StaffRepairRequestList;
 //         </Modal.Footer>
 //       </Modal>
 
+//       {/* All Remarks Modal */}
+//       <Modal show={allRemarksModal} onHide={() => setAllRemarksModal(false)} centered size="lg">
+//         <Modal.Header closeButton>
+//           <Modal.Title>All Remarks</Modal.Title>
+//         </Modal.Header>
+//         <Modal.Body>
+//           {allRemarks.length === 0 ? (
+//             <p>No remarks found.</p>
+//           ) : (
+//             <Table bordered responsive hover size="sm">
+//               <thead className="table-dark">
+//                 <tr>
+//                   <th>#</th>
+//                   <th>Request ID</th>
+//                   <th>Entered By</th>
+//                   <th style={{ minWidth: "250px" }}>Remark</th>
+//                   <th>Date</th>
+//                 </tr>
+//               </thead>
+//               <tbody>
+//                 {allRemarks.map((r, i) => (
+//                   <tr key={i}>
+//                     <td>{i + 1}</td>
+//                     <td>{r.requestId}</td>
+//                     <td>{r.enteredBy}</td>
+//                     <td style={{
+//                       whiteSpace: "normal",
+//                       wordBreak: "break-word",
+//                       lineHeight: "1.5",
+//                       fontSize: "14px",
+//                       padding: "8px"
+//                     }}>
+//                       {r.text}
+//                     </td>
+//                     <td>{new Date(r.date).toLocaleString('en-IN', {
+//                       day: '2-digit', month: 'short', year: 'numeric',
+//                       hour: '2-digit', minute: '2-digit', hour12: true
+//                     })}</td>
+//                   </tr>
+//                 ))}
+//               </tbody>
+//             </Table>
+//           )}
+//         </Modal.Body>
+//         <Modal.Footer>
+//           <Button variant="secondary" onClick={() => setAllRemarksModal(false)}>Close</Button>
+//         </Modal.Footer>
+//       </Modal>
 
 //     </Container>
-
 //   );
 // }
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Table, Form, Button, Modal } from "react-bootstrap";
+import { Container, Row, Col, Table, Form, Button, Modal, Pagination } from "react-bootstrap";
 import { toast, ToastContainer } from "react-toastify";
 
 function MyRepairRequests() {
@@ -13,6 +13,10 @@ function MyRepairRequests() {
   const [showRemarksModal, setShowRemarksModal] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [newRemark, setNewRemark] = useState("");
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10); // You can adjust this number
 
   const username = localStorage.getItem("name");
   const role = localStorage.getItem("role");
@@ -46,10 +50,19 @@ function MyRepairRequests() {
 
       setRequests(mapped);
       setFilteredRequests(mapped);
+      setCurrentPage(1); // Reset to first page when data changes
     } catch (err) {
       toast.error("Error loading requests: " + err.message);
     }
   };
+
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredRequests.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredRequests.length / itemsPerPage);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const handleFilter = () => {
     const fromDate = dateFrom ? new Date(dateFrom) : null;
@@ -64,6 +77,7 @@ function MyRepairRequests() {
     });
 
     setFilteredRequests(filtered);
+    setCurrentPage(1); // Reset to first page when filtering
   };
 
   const handleViewClick = (req) => {
@@ -124,6 +138,40 @@ function MyRepairRequests() {
     }
   };
 
+  // Pagination component
+  const renderPagination = () => {
+    if (totalPages <= 1) return null;
+
+    let items = [];
+    for (let number = 1; number <= totalPages; number++) {
+      items.push(
+        <Pagination.Item
+          key={number}
+          active={number === currentPage}
+          onClick={() => paginate(number)}
+        >
+          {number}
+        </Pagination.Item>
+      );
+    }
+
+    return (
+      <div className="d-flex justify-content-center mt-4">
+        <Pagination>
+          <Pagination.Prev 
+            disabled={currentPage === 1} 
+            onClick={() => paginate(currentPage - 1)} 
+          />
+          {items}
+          <Pagination.Next 
+            disabled={currentPage === totalPages} 
+            onClick={() => paginate(currentPage + 1)} 
+          />
+        </Pagination>
+      </div>
+    );
+  };
+
   return (
     <Container fluid className="p-4 mt-5" style={{ backgroundColor: "#f8f9fa" }}>
       <h5 className="mb-4 fw-bold">📋 My Repair Requests</h5>
@@ -175,16 +223,16 @@ function MyRepairRequests() {
               </tr>
             </thead>
             <tbody className="text-center align-middle">
-              {filteredRequests.length === 0 ? (
+              {currentItems.length === 0 ? (
                 <tr>
                   <td colSpan="9" className="text-muted">
                     No repair requests found.
                   </td>
                 </tr>
               ) : (
-                filteredRequests.map((req, idx) => (
+                currentItems.map((req, idx) => (
                   <tr key={req.id}>
-                    <td>{idx + 1}</td>
+                    <td>{indexOfFirstItem + idx + 1}</td>
                     <td>{req.date}</td>
                     <td className="text-start">{req.description}</td>
                     <td>{req.type}</td>
@@ -249,6 +297,9 @@ function MyRepairRequests() {
               )}
             </tbody>
           </Table>
+          
+          {/* Pagination */}
+          {renderPagination()}
         </Col>
       </Row>
 

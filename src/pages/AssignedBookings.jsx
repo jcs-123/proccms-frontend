@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Modal, Spinner, Badge, Form, Row, Col } from 'react-bootstrap';
+import { Table, Modal, Spinner, Badge, Form, Row, Col, Pagination } from 'react-bootstrap';
 import axios from 'axios';
 
 function StaffAllBookings() {
@@ -10,6 +10,9 @@ function StaffAllBookings() {
     const [loading, setLoading] = useState(true);
     const [fromDate, setFromDate] = useState('');
     const [toDate, setToDate] = useState('');
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(10); // You can adjust this number
 
     const username = localStorage.getItem('name');
 
@@ -19,6 +22,7 @@ function StaffAllBookings() {
 
     useEffect(() => {
         applyDateFilter();
+        setCurrentPage(1); // Reset to first page when filters change
     }, [fromDate, toDate, bookings]);
 
     const fetchAllBookings = async () => {
@@ -58,6 +62,15 @@ function StaffAllBookings() {
 
         setFilteredBookings(filtered);
     };
+
+    // Get current bookings for pagination
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentBookings = filteredBookings.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(filteredBookings.length / itemsPerPage);
+
+    // Change page
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     const handleView = (booking) => {
         setSelectedBooking(booking);
@@ -104,44 +117,69 @@ function StaffAllBookings() {
             ) : filteredBookings.length === 0 ? (
                 <p>No bookings found.</p>
             ) : (
-                <Table striped bordered hover responsive>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Room</th>
-                            <th>Purpose</th>
-                            <th>Status</th>
-                            <th>Type</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredBookings.map((booking) => (
-                            <tr key={booking._id}>
-                                <td>{booking.date}</td>
-                                <td>{booking.timeFrom} - {booking.timeTo}</td>
-                                <td>{booking.roomType}</td>
-                                <td>{booking.purpose}</td>
-                                <td>
-                                    <Badge bg={
-                                        booking.status === 'Booked' ? 'success' :
-                                            booking.status === 'Cancelled' ? 'danger' :
-                                                'warning text-dark'
-                                    }>
-                                        {booking.status}
-                                    </Badge>
-                                </td>
-                                <td>{getRoleTag(booking)}</td>
-                                <td>
-                                    <button className="btn btn-info btn-sm" onClick={() => handleView(booking)}>
-                                        View
-                                    </button>
-                                </td>
+                <>
+                    <Table striped bordered hover responsive>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Room</th>
+                                <th>Purpose</th>
+                                <th>Status</th>
+                                <th>Type</th>
+                                <th>Actions</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </Table>
+                        </thead>
+                        <tbody>
+                            {currentBookings.map((booking) => (
+                                <tr key={booking._id}>
+                                    <td>{booking.date}</td>
+                                    <td>{booking.timeFrom} - {booking.timeTo}</td>
+                                    <td>{booking.roomType}</td>
+                                    <td>{booking.purpose}</td>
+                                    <td>
+                                        <Badge bg={
+                                            booking.status === 'Booked' ? 'success' :
+                                                booking.status === 'Cancelled' ? 'danger' :
+                                                    'warning text-dark'
+                                        }>
+                                            {booking.status}
+                                        </Badge>
+                                    </td>
+                                    <td>{getRoleTag(booking)}</td>
+                                    <td>
+                                        <button className="btn btn-info btn-sm" onClick={() => handleView(booking)}>
+                                            View
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </Table>
+
+                    {/* Pagination */}
+                    {filteredBookings.length > itemsPerPage && (
+                        <div className="d-flex justify-content-center">
+                            <Pagination>
+                                <Pagination.First onClick={() => paginate(1)} disabled={currentPage === 1} />
+                                <Pagination.Prev onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1} />
+                                
+                                {Array.from({ length: totalPages }, (_, i) => i + 1).map(number => (
+                                    <Pagination.Item 
+                                        key={number} 
+                                        active={number === currentPage}
+                                        onClick={() => paginate(number)}
+                                    >
+                                        {number}
+                                    </Pagination.Item>
+                                ))}
+                                
+                                <Pagination.Next onClick={() => paginate(currentPage + 1)} disabled={currentPage === totalPages} />
+                                <Pagination.Last onClick={() => paginate(totalPages)} disabled={currentPage === totalPages} />
+                            </Pagination>
+                        </div>
+                    )}
+                </>
             )}
 
             {/* Modal */}
@@ -161,7 +199,6 @@ function StaffAllBookings() {
                             <p><strong>Requested By:</strong> {selectedBooking.username}</p>
                             <p><strong>Assigned Staff:</strong> {selectedBooking.assignedStaff || "None"}</p>
 
-                            {/* ✅ Conditionally show Admin Remarks */}
                             {selectedBooking.adminRemarks && (
                                 <div className="card mt-3">
                                     <div className="card-header bg-light">
@@ -175,7 +212,6 @@ function StaffAllBookings() {
                         </>
                     )}
                 </Modal.Body>
-
             </Modal>
         </div>
     );
