@@ -11,35 +11,43 @@ function RepairRequest() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!description.trim()) return alert("Description required.");
-
-  const formData = new FormData();
-  formData.append("description", description);
-  formData.append("isNewRequirement", isNewRequirement);
-  formData.append("username", localStorage.getItem("name"));
-  formData.append("role", localStorage.getItem("role"));
-  formData.append("department", localStorage.getItem("department")); // ✅ Add this
-
-  if (file) formData.append("file", file);
-
-  try {
-    const res = await fetch("https://proccms-backend.onrender.com/api/repair-requests", {
-      method: "POST",
-      body: formData,
-    });
-
-    if (res.ok) {
-      toast.success("Submitted successfully!", { position: "top-center" });
-      handleCancel();
-    } else {
-      toast.error("Submission failed.", { position: "top-center" });
+    e.preventDefault();
+    if (!description.trim()) {
+      toast.error("Description is required", { position: "top-center" });
+      return;
     }
-  } catch (err) {
-    toast.error("Error: " + err.message, { position: "top-center" });
-  }
-};
 
+    const formData = new FormData();
+    formData.append("description", description);
+    formData.append("isNewRequirement", isNewRequirement);
+    formData.append("username", localStorage.getItem("name"));
+    formData.append("role", localStorage.getItem("role"));
+    formData.append("department", localStorage.getItem("department"));
+    formData.append("phone", localStorage.getItem("phone") || ""); // Add phone
+    formData.append("email", localStorage.getItem("email") || ""); // Add email
+
+    if (file) formData.append("file", file);
+
+    try {
+      const res = await fetch("https://proccms-backend.onrender.com/api/repair-requests", {
+        method: "POST",
+        body: formData,
+        // Don't set Content-Type header - let browser set it with boundary
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Submission failed");
+      }
+
+      toast.success("Request submitted successfully!", { position: "top-center" });
+      handleCancel();
+    } catch (err) {
+      console.error("Submission error:", err);
+      toast.error(`Error: ${err.message}`, { position: "top-center" });
+    }
+  };
   const handleCancel = () => {
     setDescription("");
     setIsNewRequirement(false);
