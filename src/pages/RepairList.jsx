@@ -134,6 +134,7 @@ function RepairList() {
                         : req
                 )
             );
+
             const res = await fetch(`https://proccms-backend.onrender.com/api/repair-requests/${id}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
@@ -144,8 +145,13 @@ function RepairList() {
             });
 
             if (!res.ok) throw new Error("Failed to update assigned person");
+
+            // Add success notification
+            if (newAssignedTo !== "--- select ---") {
+                toast.success(`Request assigned to ${newAssignedTo}. Notification email sent.`);
+            }
         } catch (err) {
-            alert(err.message);
+            toast.error("Assignment failed: " + err.message);
             fetchRequests();
         }
     };
