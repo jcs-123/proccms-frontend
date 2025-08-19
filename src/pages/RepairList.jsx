@@ -119,63 +119,78 @@ function RepairList() {
             alert(error.message);
         }
     };
-   // ... (previous imports remain the same)
+    const handleAssignChange = async (id, newAssignedTo) => {
+        try {
+            console.log("🔄 Assign change triggered");
+            console.log("🆔 Request ID:", id);
+            console.log("👤 New AssignedTo value:", newAssignedTo);
 
-const handleAssignChange = async (id, newAssignedTo) => {
-  try {
-    setRequests(prev =>
-      prev.map(req =>
-        req.id === id
-          ? {
-              ...req,
-              assignedTo: newAssignedTo,
-              status: newAssignedTo !== "--- select ---" && req.status === "Pending"
-                  ? "Assigned"
-                  : req.status,
+            // Update state optimistically
+            setRequests(prev =>
+                prev.map(req =>
+                    req.id === id
+                        ? {
+                            ...req,
+                            assignedTo: newAssignedTo,
+                            status:
+                                newAssignedTo !== "--- select ---" && req.status === "Pending"
+                                    ? "Assigned"
+                                    : req.status,
+                        }
+                        : req
+                )
+            );
+            console.log("📝 State updated optimistically with assignedTo:", newAssignedTo);
+
+            // API call
+            console.log("🌐 Sending PATCH request to backend...");
+            const response = await fetch(
+                `https://proccms-backend.onrender.com/api/repair-requests/${id}`,
+                {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        assignedTo: newAssignedTo,
+                        status: newAssignedTo !== "--- select ---" ? "Assigned" : undefined,
+                    }),
+                }
+            );
+
+            console.log("📡 Backend response status:", response.status);
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error("❌ Backend error response:", errorData);
+                throw new Error(errorData.message || "Failed to update assigned person");
             }
-          : req
-      )
-    );
 
-    const response = await fetch(`https://proccms-backend.onrender.com/api/repair-requests/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        assignedTo: newAssignedTo,
-        status: newAssignedTo !== "--- select ---" ? "Assigned" : undefined,
-      }),
-    });
+            const result = await response.json();
+            console.log("✅ Backend update success:", result);
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to update assigned person");
-    }
+            if (newAssignedTo !== "--- select ---") {
+                console.log("📨 Showing success toast for staff:", newAssignedTo);
+                toast.success(
+                    <div>
+                        <p>Request assigned to <strong>{newAssignedTo}</strong></p>
+                        <p>Notification email sent to staff member.</p>
+                    </div>
+                );
+            }
 
-    const result = await response.json();
-    
-    if (newAssignedTo !== "--- select ---") {
-      toast.success(
-        <div>
-          <p>Request assigned to <strong>{newAssignedTo}</strong></p>
-          <p>Notification email sent to staff member.</p>
-        </div>
-      );
-    }
-    
-    return result;
-  } catch (err) {
-    console.error("Assignment error:", err);
-    toast.error(
-      <div>
-        <p>Assignment failed!</p>
-        <p>{err.message}</p>
-      </div>
-    );
-    fetchRequests(); // Refresh data
-  }
-};
+            return result;
+        } catch (err) {
+            console.error("❌ Assignment error caught:", err);
+            toast.error(
+                <div>
+                    <p>Assignment failed!</p>
+                    <p>{err.message}</p>
+                </div>
+            );
+            console.log("🔄 Refreshing requests after error...");
+            fetchRequests(); // Refresh data
+        }
+    };
 
-// ... (rest of the component remains the same)
     const handleStatusChange = async (id, newStatus) => {
         try {
             const updateData = { status: newStatus };
