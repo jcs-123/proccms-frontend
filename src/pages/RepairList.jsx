@@ -8,6 +8,7 @@ import { useLocation } from 'react-router-dom';
 
 
 
+
 function RepairList() {
     const [filters, setFilters] = useState({
         dateFrom: '',
@@ -172,11 +173,10 @@ function RepairList() {
                 toast.success(
                     <div>
                         <p>Request assigned to <strong>{newAssignedTo}</strong></p>
-                        <p>Notification email sent to staff member.</p>
+                        <p>Notification email has been sent.</p>
                     </div>
                 );
             }
-
             return result;
         } catch (err) {
             console.error("❌ Assignment error caught:", err);
