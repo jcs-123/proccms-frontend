@@ -283,14 +283,18 @@ function RepairList() {
             const enteredBy = localStorage.getItem("name") || "Admin";
             const isAdmin = localStorage.getItem("role") === "admin";
 
-            const res = await fetch(`https://proccms-backend.onrender.com/api/repair-requests/${selectedRequest.id}/remarks`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    text: remarks,
-                    enteredBy
-                }),
-            });
+            const res = await fetch(
+                `https://proccms-backend.onrender.com/api/repair-requests/${selectedRequest.id}/remarks`,
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        text: remarks,
+                        enteredBy: localStorage.getItem("name"),
+                        role: localStorage.getItem("role") // 👈 send role explicitly
+                    }),
+                }
+            );
 
             if (!res.ok) throw new Error("Failed to save remarks");
 
