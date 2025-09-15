@@ -31,6 +31,7 @@ const Dashboard = () => {
         axios.get("https://proccms-backend.onrender.com/api/admin/repair-summary"),
         axios.get("https://proccms-backend.onrender.com/api/admin/repair-staff-summary", { params }),
         axios.get("https://proccms-backend.onrender.com/api/admin/room-requests")
+
       ]);
 
       setSummary(summaryRes.data);
