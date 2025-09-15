@@ -562,22 +562,11 @@ function RepairList() {
 
                                     <td>{req.type}</td>
                                     <td>
-                                        {req.fileUrl ? (
-                                            <a href={req.fileUrl} target="_blank" rel="noopener noreferrer">
-                                                <img
-                                                    src={req.fileUrl}
-                                                    alt="file"
-                                                    style={{ maxWidth: 40, cursor: 'pointer' }}
-                                                    onError={(e) => {
-                                                        // Fallback if image fails to load
-                                                        e.target.src = "https://via.placeholder.com/40?text=File";
-                                                    }}
-                                                />
-                                            </a>
-                                        ) : (
-                                            <span className="text-muted">No file</span>
-                                        )}
+                                        <a href={req.fileUrl} target="_blank" rel="noopener noreferrer">
+                                            <img src={req.fileUrl} alt="file" style={{ maxWidth: 40, cursor: 'pointer' }} />
+                                        </a>
                                     </td>
+
                                     <td style={{ minWidth: "110px", padding: "8px", textAlign: "center" }}>
                                         {req.assignedTo !== "--- select ---" && (
                                             <strong className="text-uppercase d-block mb-1">{req.assignedTo}</strong>
