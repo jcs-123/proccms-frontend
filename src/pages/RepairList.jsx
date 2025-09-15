@@ -281,59 +281,27 @@ function RepairList() {
     const handleSaveRemarks = async () => {
         try {
             const enteredBy = localStorage.getItem("name") || "Admin";
-            const isAdmin = localStorage.getItem("role") === "admin";
 
-            const res = await fetch(`https://proccms-backend.onrender.com/api/repair-requests/${selectedRequest.id}/remarks`, {
+            const res = await fetch(`/api/repair-requests/${selectedRequest.id}/remarks`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    text: remarks,
-                    enteredBy
-                }),
+                body: JSON.stringify({ text: remarks, enteredBy }),
             });
 
             if (!res.ok) throw new Error("Failed to save remarks");
 
-            // If admin is adding the remark, update status to "Refer Remark"
-            if (isAdmin) {
-                await fetch(`https://proccms-backend.onrender.com/api/repair-requests/${selectedRequest.id}`, {
-                    method: "PATCH",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        status: "Refer Remark"
-                    }),
-                });
+            const updatedRequest = await res.json();  // ✅ this has updated remarks + status
 
-                // Update local state
-                setRequests(prev =>
-                    prev.map(req =>
-                        req.id === selectedRequest.id
-                            ? { ...req, status: "Refer Remark" }
-                            : req
-                    )
-                );
-
-                if (selectedRequest) {
-                    setSelectedRequest(prev => ({
-                        ...prev,
-                        status: "Refer Remark"
-                    }));
-                }
-            }
+            // update local state with backend response
+            setRequests(prev =>
+                prev.map(req =>
+                    req.id === selectedRequest.id ? updatedRequest : req
+                )
+            );
+            setSelectedRequest(updatedRequest);
 
             toast.success("Remarks saved successfully!");
             setShowRemarksModal(false);
-            fetchRequests(); // Refresh the list
-
-            // Also update the selected request in view modal
-            if (selectedRequest) {
-                const updatedRequest = await res.json();
-                setSelectedRequest(prev => ({
-                    ...prev,
-                    remarks: updatedRequest.remarks,
-                    ...(isAdmin && { status: "Refer Remark" }) // Add status if admin
-                }));
-            }
         } catch (err) {
             toast.error("Error saving remarks: " + err.message);
         }
