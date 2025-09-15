@@ -30,8 +30,7 @@ const Dashboard = () => {
       const [summaryRes, staffRes, roomRes] = await Promise.all([
         axios.get("https://proccms-backend.onrender.com/api/admin/repair-summary"),
         axios.get("https://proccms-backend.onrender.com/api/admin/repair-staff-summary", { params }),
-        axios.get("https://proccms-backend.onrender.com/api/admin/room-requests")
-
+        axios.get("https://proccms-backend.onrender.com/api/admin/room-requests"),
       ]);
 
       setSummary(summaryRes.data);
@@ -79,7 +78,7 @@ const Dashboard = () => {
       color: "#8e44ad",
       icon: <FaCalendarAlt size={40} color="#8e44ad" />,
       onClick: () => handleCardClick("room"),
-    }
+    },
   ];
 
   const styles = getStyles(windowWidth);
@@ -231,7 +230,7 @@ const getStyles = (width) => {
       borderRadius: "4px",
       cursor: "pointer",
     },
-
+    
     summary: {
       display: "flex",
       gap: "12px",
