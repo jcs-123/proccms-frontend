@@ -281,21 +281,22 @@ function RepairList() {
     const handleSaveRemarks = async () => {
         try {
             const enteredBy = localStorage.getItem("name") || "Admin";
-            const isAdmin = localStorage.getItem("role") === "admin";
+            const userRole = localStorage.getItem("role"); // Get user role
 
             const res = await fetch(`https://proccms-backend.onrender.com/api/repair-requests/${selectedRequest.id}/remarks`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     text: remarks,
-                    enteredBy
+                    enteredBy,
+                    userRole // Send user role to backend
                 }),
             });
 
             if (!res.ok) throw new Error("Failed to save remarks");
 
             // If admin is adding the remark, update status to "Refer Remark"
-            if (isAdmin) {
+            if (userRole === "admin") {
                 await fetch(`https://proccms-backend.onrender.com/api/repair-requests/${selectedRequest.id}`, {
                     method: "PATCH",
                     headers: { "Content-Type": "application/json" },
@@ -331,14 +332,14 @@ function RepairList() {
                 setSelectedRequest(prev => ({
                     ...prev,
                     remarks: updatedRequest.remarks,
-                    ...(isAdmin && { status: "Refer Remark" }) // Add status if admin
+                    ...(userRole === "admin" && { status: "Refer Remark" }) // Add status if admin
                 }));
             }
         } catch (err) {
             toast.error("Error saving remarks: " + err.message);
         }
     };
-
+    
     // Pagination logic
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
