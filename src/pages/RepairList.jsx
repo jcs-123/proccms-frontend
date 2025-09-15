@@ -107,7 +107,8 @@ function RepairList() {
                 mobile: req.phone || '--',
                 details: req.description,
                 type: req.isNewRequirement ? "New Requirement" : "Repair Request",
-                fileUrl: req.fileUrl ? `https://proccms-backend.onrender.com${req.fileUrl}` : "https://via.placeholder.com/20",
+                // ✅ FIX: Use the correct URL format for uploaded files
+                fileUrl: req.fileUrl ? `https://proccms-backend.onrender.com${req.fileUrl}` : null,
                 assignedTo: req.assignedTo || "--- select ---",
                 status: req.status || "Pending",
                 isVerified: req.isVerified || false,
@@ -120,6 +121,7 @@ function RepairList() {
             alert(error.message);
         }
     };
+
     const handleAssignChange = async (id, newAssignedTo) => {
         try {
             console.log("🔄 Assign change triggered");
@@ -339,7 +341,7 @@ function RepairList() {
             toast.error("Error saving remarks: " + err.message);
         }
     };
-    
+
     // Pagination logic
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
