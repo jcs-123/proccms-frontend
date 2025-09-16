@@ -6,9 +6,6 @@ import * as XLSX from "xlsx";
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 
-
-
-
 function RepairList() {
     const [filters, setFilters] = useState({
         dateFrom: '',
@@ -23,24 +20,14 @@ function RepairList() {
     const [showRemarksModal, setShowRemarksModal] = useState(false);
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [remarks, setRemarks] = useState("");
-
-
     const [allRemarksModal, setAllRemarksModal] = useState(false);
     const [allRemarks, setAllRemarks] = useState([]);
-    const [acknowledgedRemarks, setAcknowledgedRemarks] = useState([]);
 
     const location = useLocation();
     const params = new URLSearchParams(location.search);
-    const urlFilter = params.get("filter"); // "assigned" or "pending"
-
-
-
+    const urlFilter = params.get("filter");
     const username = localStorage.getItem("name");
     const role = localStorage.getItem("role");
-
-
-
-    // Pagination states
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
 
@@ -71,10 +58,6 @@ function RepairList() {
             alert(err.message);
         }
     };
-
-
-
-
 
     const fetchRequests = async () => {
         try {
@@ -107,8 +90,9 @@ function RepairList() {
                 mobile: req.phone || '--',
                 details: req.description,
                 type: req.isNewRequirement ? "New Requirement" : "Repair Request",
-                // ✅ FIX: Use the correct URL format for uploaded files
+                // ✅ FIXED: Use the correct URL format for uploaded files
                 fileUrl: req.fileUrl ? `https://proccms-backend.onrender.com${req.fileUrl}` : null,
+                fileName: req.fileUrl ? req.fileUrl.split('/').pop() : null,
                 assignedTo: req.assignedTo || "--- select ---",
                 status: req.status || "Pending",
                 isVerified: req.isVerified || false,
@@ -120,6 +104,55 @@ function RepairList() {
         } catch (error) {
             alert(error.message);
         }
+    };
+
+    // Handle image loading errors
+    const handleImageError = (e) => {
+        e.target.src = "https://via.placeholder.com/40?text=File";
+        e.target.style.cursor = 'default';
+        e.target.onclick = null; // Remove click action
+    };
+
+    // Render file column with proper error handling
+    const renderFileCell = (req) => {
+        if (!req.fileUrl) {
+            return <span className="text-muted">No file</span>;
+        }
+
+        const isImage = /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(req.fileUrl);
+        const fileExtension = req.fileName ? req.fileName.split('.').pop().toUpperCase() : 'FILE';
+
+        return (
+            <a href={req.fileUrl} target="_blank" rel="noopener noreferrer">
+                {isImage ? (
+                    <img
+                        src={req.fileUrl}
+                        alt="Uploaded file"
+                        style={{ maxWidth: 40, cursor: 'pointer' }}
+                        onError={handleImageError}
+                    />
+                ) : (
+                    <div
+                        style={{
+                            width: 40,
+                            height: 40,
+                            backgroundColor: '#f0f0f0',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderRadius: 4,
+                            cursor: 'pointer',
+                            border: '1px solid #ddd'
+                        }}
+                        title={req.fileName || 'Download file'}
+                    >
+                        <span style={{ fontSize: '10px', fontWeight: 'bold' }}>
+                            {fileExtension}
+                        </span>
+                    </div>
+                )}
+            </a>
+        );
     };
 
     const handleAssignChange = async (id, newAssignedTo) => {
@@ -562,9 +595,7 @@ function RepairList() {
 
                                     <td>{req.type}</td>
                                     <td>
-                                        <a href={req.fileUrl} target="_blank" rel="noopener noreferrer">
-                                            <img src={req.fileUrl} alt="file" style={{ maxWidth: 40, cursor: 'pointer' }} />
-                                        </a>
+                                        {renderFileCell(req)}
                                     </td>
 
                                     <td style={{ minWidth: "110px", padding: "8px", textAlign: "center" }}>
@@ -777,20 +808,32 @@ function RepairList() {
                                     </div>
 
                                     {/* Optional File */}
-                                    {selectedRequest.fileUrl && (
+                                    {selectedRequest?.fileUrl && (
                                         <div className="mt-4">
                                             <h6>Attachment</h6>
+                                            {selectedRequest.fileUrl.match(/\.(jpg|jpeg|png|gif|bmp|webp)$/i) ? (
+                                                <div>
+                                                    <img
+                                                        src={selectedRequest.fileUrl}
+                                                        alt="Attachment"
+                                                        style={{ maxWidth: '100%', maxHeight: '300px', marginBottom: '10px' }}
+                                                        onError={(e) => {
+                                                            e.target.style.display = 'none';
+                                                        }}
+                                                    />
+                                                    <br />
+                                                </div>
+                                            ) : null}
                                             <a
                                                 href={selectedRequest.fileUrl}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="btn btn-outline-primary btn-sm"
                                             >
-                                                View Attached File
+                                                {selectedRequest.fileName || 'Download Attachment'}
                                             </a>
                                         </div>
                                     )}
-
 
                                     {/* Remarks Table */}
                                     <div className="mt-4">
