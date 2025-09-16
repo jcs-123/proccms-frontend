@@ -31,6 +31,9 @@ function RepairList() {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
 
+    // Data URI for placeholder (no external dependency)
+    const placeholderSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23f8f9fa'/%3E%3Cpath d='M13,18 L27,18 L27,28 L13,28 L13,18 Z M15,20 L15,26 L25,26 L25,20 L15,20 Z M18,13 L22,13 L22,15 L18,15 L18,13 Z' fill='%236c757d'/%3E%3C/svg%3E";
+
     useEffect(() => {
         fetchRequests();
         fetchStaff();
@@ -90,7 +93,6 @@ function RepairList() {
                 mobile: req.phone || '--',
                 details: req.description,
                 type: req.isNewRequirement ? "New Requirement" : "Repair Request",
-                // ✅ FIXED: Use the correct URL format for uploaded files
                 fileUrl: req.fileUrl ? `https://proccms-backend.onrender.com${req.fileUrl}` : null,
                 fileName: req.fileUrl ? req.fileUrl.split('/').pop() : null,
                 assignedTo: req.assignedTo || "--- select ---",
@@ -106,17 +108,31 @@ function RepairList() {
         }
     };
 
-    // Handle image loading errors
     const handleImageError = (e) => {
-        e.target.src = "https://via.placeholder.com/40?text=File";
+        e.target.src = placeholderSvg;
         e.target.style.cursor = 'default';
-        e.target.onclick = null; // Remove click action
+        e.target.onclick = null;
     };
 
-    // Render file column with proper error handling
     const renderFileCell = (req) => {
         if (!req.fileUrl) {
-            return <span className="text-muted">No file</span>;
+            return (
+                <div
+                    style={{
+                        width: 40,
+                        height: 40,
+                        backgroundColor: '#f8f9fa',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: 4,
+                        border: '1px solid #dee2e6'
+                    }}
+                    title="No file attached"
+                >
+                    <span style={{ fontSize: '8px', color: '#6c757d' }}>No file</span>
+                </div>
+            );
         }
 
         const isImage = /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(req.fileUrl);
@@ -128,7 +144,7 @@ function RepairList() {
                     <img
                         src={req.fileUrl}
                         alt="Uploaded file"
-                        style={{ maxWidth: 40, cursor: 'pointer' }}
+                        style={{ maxWidth: 40, maxHeight: 40, cursor: 'pointer', objectFit: 'cover' }}
                         onError={handleImageError}
                     />
                 ) : (
@@ -136,24 +152,25 @@ function RepairList() {
                         style={{
                             width: 40,
                             height: 40,
-                            backgroundColor: '#f0f0f0',
+                            backgroundColor: '#e9ecef',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             borderRadius: 4,
                             cursor: 'pointer',
-                            border: '1px solid #ddd'
+                            border: '1px solid #dee2e6'
                         }}
                         title={req.fileName || 'Download file'}
                     >
-                        <span style={{ fontSize: '10px', fontWeight: 'bold' }}>
-                            {fileExtension}
+                        <span style={{ fontSize: '9px', fontWeight: 'bold', color: '#495057' }}>
+                            {fileExtension.length > 4 ? 'FILE' : fileExtension}
                         </span>
                     </div>
                 )}
             </a>
         );
     };
+
 
     const handleAssignChange = async (id, newAssignedTo) => {
         try {
