@@ -351,7 +351,14 @@ function RoomBookingList() {
               currentItems.map((booking, index) => (
                 <tr key={booking._id || booking.id}>
                   <td>{indexOfFirstItem + index + 1}</td>
-                  <td>{booking.requestedDate || booking.createdAt?.slice(0, 10) || '—'}</td>
+                  <td>{booking.requestedDate || booking.createdAt?.slice(0, 10) || '—'} <br/> <strong>Requested At:</strong>{" "}
+                      {booking.createdAt
+                        ? new Date(booking.createdAt).toLocaleString("en-IN", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: true,
+                        })
+                        : "—"}</td>
                   <td>
                     <div>
                       <strong>{booking.requestFrom?.username || booking.username || '—'}</strong>

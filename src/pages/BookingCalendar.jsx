@@ -204,16 +204,26 @@ const CalendarBooking = ({ onBookingUpdated }) => {
         >
           <strong>{hoveredEvent.bookingNumber ? `#Booking No: ${hoveredEvent.bookingNumber}` : 'Booking'}</strong> - {hoveredEvent.roomType || 'Room'}
           <br />
-          <b>Booked Time:</b>{' '}
-          {hoveredEvent.bookingDateTime
-            ? `${new Date(hoveredEvent.bookingDateTime).toLocaleDateString('en-IN')} – ${new Date(hoveredEvent.bookingDateTime).toLocaleTimeString('en-IN', {
-              hour: '2-digit',
-              minute: '2-digit',
-              hour12: true
-            })}`
-            : hoveredEvent.date
-              ? `${hoveredEvent.date} – ${hoveredEvent.timeFrom || ''} to ${hoveredEvent.timeTo || ''}`
-              : 'N/A'}
+          <b>Booked Time:</b>{" "}
+          {hoveredEvent.date
+            ? `${hoveredEvent.date} – ${hoveredEvent.timeFrom} to ${hoveredEvent.timeTo}`
+            : hoveredEvent.bookingDateTime
+              ? new Date(hoveredEvent.bookingDateTime).toLocaleString("en-IN", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+              })
+              : "N/A"}
+          <br />
+          <b>Request Time:</b>{" "}
+          {hoveredEvent.createdAt
+            ? new Date(hoveredEvent.createdAt).toLocaleString("en-IN", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            })
+            : "—"}
+
           <br />
           <b>Person:</b> {hoveredEvent.username || 'N/A'} <br />
           <b>Purpose:</b> {hoveredEvent.purpose || 'N/A'}
