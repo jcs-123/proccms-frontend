@@ -243,8 +243,13 @@ function RoomBooking() {
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label className="fw-bold">Mobile Number<span className="text-danger">*</span></Form.Label>
-              <Form.Control type="tel" value={mobileNumber} onChange={(e) => setMobileNumber(e.target.value)} required />
+              <Form.Label className="fw-bold">Mobile Number (Optional)</Form.Label>
+              <Form.Control
+                type="tel"
+                value={mobileNumber}
+                onChange={(e) => setMobileNumber(e.target.value)}
+                placeholder="Enter mobile number (optional)"
+              />
             </Form.Group>
 
             <Form.Group className="mb-3">
