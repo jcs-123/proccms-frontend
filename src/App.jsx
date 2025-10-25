@@ -38,6 +38,40 @@ function App() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  useEffect(() => {
+  const verifyLogin = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setIsLoggedIn(false);
+      return;
+    }
+
+    try {
+      const res = await fetch("https://proccms-backend.onrender.com/api/auth/verify", {
+        headers: { Authorization: token },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setIsLoggedIn(true);
+        setRole(data.role);
+      } else {
+        localStorage.clear();
+        setIsLoggedIn(false);
+        setRole(null);
+      }
+    } catch (err) {
+      console.error("Verification failed:", err);
+      localStorage.clear();
+      setIsLoggedIn(false);
+      setRole(null);
+    }
+  };
+
+  verifyLogin();
+}, []);
+
+
   const handleLogout = () => {
     localStorage.clear();
     setIsLoggedIn(false);
