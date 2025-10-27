@@ -27,7 +27,7 @@ const CalendarBooking = ({ onBookingUpdated }) => {
   const [updating, setUpdating] = useState(false);
   const [staffList, setStaffList] = useState([]);
   const [hoveredEvent, setHoveredEvent] = useState(null);
-  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  // const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
   const calendarRef = useRef(null);
   const location = useLocation(); // for getting ?date param from URL
@@ -94,24 +94,26 @@ const CalendarBooking = ({ onBookingUpdated }) => {
     setOpenModal(true);
   };
 
-  const handleMouseEnter = (eventInfo, e) => {
+
+
+  const handleMouseEnter = (eventInfo) => {
     setHoveredEvent(eventInfo.event.extendedProps);
-    setTooltipPosition({ x: e.pageX, y: e.pageY });
   };
 
   const handleMouseLeave = () => setHoveredEvent(null);
 
-  const handleMouseMove = (e) => {
-    if (hoveredEvent) {
-      setTooltipPosition({ x: e.pageX + 10, y: e.pageY + 10 });
-    }
-  };
+  // const handleMouseMove = (e) => {
+  //   if (hoveredEvent) {
+  //     setTooltipPosition({ x: e.pageX + 10, y: e.pageY + 10 });
+  //   }
+  // };
+
 
   useEffect(() => {
     fetchBookings();
-    document.addEventListener('mousemove', handleMouseMove);
-    return () => document.removeEventListener('mousemove', handleMouseMove);
   }, []);
+
+
 
   useEffect(() => {
     if (openModal) fetchStaffList();
@@ -194,62 +196,80 @@ const CalendarBooking = ({ onBookingUpdated }) => {
 
       {/* Floating Tooltip */}
       {/* Floating Tooltip */}
+      {/* ✅ Hover Tooltip fixed at top-left */}
       {hoveredEvent && (
         <div
-          className="tooltip-box"
+          className="hover-info-fixed"
           style={{
-            top: tooltipPosition.y,
-            left: tooltipPosition.x,
-            position: "absolute",
-            background: "rgba(255,255,255,0.95)",
+            position: "fixed",
+            top: "80px", // distance from top bar
+            left: "50%", // center horizontally
+            transform: "translateX(-50%)", // perfect centering
+            background: "white",
             border: "1px solid #d1d5db",
-            boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
-            padding: "10px 14px",
-            borderRadius: "8px",
-            fontSize: "13px",
-            color: "#1f2937",
-            zIndex: 9999,
-            width: "250px",
-            pointerEvents: "none",
+            borderTop: "5px solid #3b82f6", // blue accent bar
+            boxShadow: "0 6px 25px rgba(0,0,0,0.15)",
+            borderRadius: "12px",
+            padding: "16px 22px",
+            width: "400px",
+            zIndex: 2000,
+            fontFamily: "Poppins, sans-serif",
+            color: "#111827",
+            animation: "fadeInDown 0.3s ease-in-out",
+            textAlign: "left",
           }}
         >
-          <strong style={{ color: "#111827" }}>
+          <strong style={{ color: "#111827", fontSize: "15px" }}>
+            {hoveredEvent.roomType || "Room"}{" "}
             {hoveredEvent.bookingNumber
-              ? `#Booking No: ${hoveredEvent.bookingNumber}`
-              : "Booking"}
-          </strong>{" "}
-          – <b>{hoveredEvent.roomType || "Room"}</b>
-          <hr style={{ margin: "6px 0", borderTop: "1px solid #e5e7eb" }} />
-          <b>Booked Time:</b>{" "}
-          {hoveredEvent.date
-            ? `${hoveredEvent.date} • ${hoveredEvent.timeFrom} → ${hoveredEvent.timeTo}`
-            : hoveredEvent.bookingDateTime
-              ? new Date(hoveredEvent.bookingDateTime).toLocaleString("en-IN", {
+              ? `– #${hoveredEvent.bookingNumber}`
+              : ""}
+          </strong>
+          <hr style={{ margin: "8px 0", borderTop: "1px solid #e5e7eb" }} />
+
+          <p style={{ margin: "4px 0" }}>
+            <b>Booked Time:</b>{" "}
+            {hoveredEvent.date
+              ? `${hoveredEvent.date} • ${hoveredEvent.timeFrom} → ${hoveredEvent.timeTo}`
+              : hoveredEvent.bookingDateTime
+                ? new Date(hoveredEvent.bookingDateTime).toLocaleString("en-IN", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })
+                : "N/A"}
+          </p>
+
+          <p style={{ margin: "4px 0" }}>
+            <b>Requested Time:</b>{" "}
+            {hoveredEvent.createdAt
+              ? new Date(hoveredEvent.createdAt).toLocaleString("en-IN", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
                 hour: "2-digit",
                 minute: "2-digit",
                 hour12: true,
               })
-              : "N/A"}
-          <br />
-          <b>Requested Time:</b>{" "}
-          {hoveredEvent.createdAt
-            ? new Date(hoveredEvent.createdAt).toLocaleString("en-IN", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-            })
-            : "—"}
-          <br />
-          <b>Person:</b> {hoveredEvent.username || "N/A"} <br />
-          <b>Department:</b> {hoveredEvent.department || "N/A"} <br />
-          <b>Purpose:</b> {hoveredEvent.purpose || "N/A"} <br />
+              : "—"}
+          </p>
+
+          <p style={{ margin: "4px 0" }}>
+            <b>Person:</b> {hoveredEvent.username || "N/A"}
+          </p>
+
+          <p style={{ margin: "4px 0" }}>
+            <b>Department:</b> {hoveredEvent.department || "N/A"}
+          </p>
+
+          <p style={{ margin: "4px 0" }}>
+            <b>Purpose:</b> {hoveredEvent.purpose || "N/A"}
+          </p>
+
           {hoveredEvent.remarks && (
-            <>
+            <p style={{ margin: "4px 0" }}>
               <b>Remarks:</b> {hoveredEvent.remarks}
-            </>
+            </p>
           )}
         </div>
       )}
