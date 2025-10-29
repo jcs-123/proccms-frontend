@@ -300,94 +300,104 @@ function UserRoomBookingList() {
       )}
 
       {/* View Modal */}
-      <Modal show={viewModalShow} onHide={() => setViewModalShow(false)} size="lg" centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Booking Details</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {selectedBooking ? (
-            <div className="row g-3">
-              <div className="col-md-6">
-                <p><strong>Booking Date:</strong> {selectedBooking.date || selectedBooking.bookingDateTime?.slice(0, 10)}</p>
-                <p><strong>Time Slot:</strong> {selectedBooking.timeFrom} - {selectedBooking.timeTo}</p>
-                <p><strong>Room:</strong> {selectedBooking.room || selectedBooking.roomType}</p>
-              </div>
-              <div className="col-md-6">
-                <p><strong>Status:</strong>
-                  <span className={`badge ${selectedBooking.status === 'Booked' ? 'bg-success' : selectedBooking.status === 'Pending' ? 'bg-warning text-dark' : 'bg-danger'}`}>
-                    {selectedBooking.status || 'Pending'}
-                  </span>
-                </p>
-                <p><strong>Requested By:</strong> {selectedBooking.requestFrom?.username || selectedBooking.username}</p>
-              </div>
+    {/* View Modal */}
+<Modal show={viewModalShow} onHide={() => setViewModalShow(false)} size="lg" centered>
+  <Modal.Header closeButton>
+    <Modal.Title>Booking Details</Modal.Title>
+  </Modal.Header>
 
-              {/* Admin Remarks Section */}
-              <div className="col-md-6 mt-3">
-                <div className="card border-0 shadow-sm">
-                  <div className="card-header bg-light">
-                    <h6 className="mb-0">Admin Remarks</h6>
-                  </div>
-                  <div className="card-body">
-                    {selectedBooking.adminRemarks ? (
-                      <div className="p-2 bg-white rounded border">
-                        {selectedBooking.adminRemarks}
-                      </div>
-                    ) : (
-                      <p className="text-muted mb-0">No remarks from admin</p>
-                    )}
-                  </div>
-                </div>
-              </div>
+  <Modal.Body>
+    {selectedBooking ? (
+      <div className="container-fluid">
+        <Row className="g-3">
+          {/* Left column */}
+          <Col md={6}>
+            <p><strong>Room:</strong> {selectedBooking.room || selectedBooking.roomType}</p>
+            <p><strong>Date:</strong> {selectedBooking.date || selectedBooking.bookingDateTime?.slice(0, 10)}</p>
+            <p><strong>Time From:</strong> {selectedBooking.timeFrom}</p>
+            <p><strong>Time To:</strong> {selectedBooking.timeTo}</p>
+            <p><strong>Purpose:</strong> {selectedBooking.purpose || "—"}</p>
+            <p><strong>Facilities:</strong> 
+              {selectedBooking.facilities?.length > 0
+                ? selectedBooking.facilities.join(", ")
+                : "No facilities requested"}
+            </p>
+          </Col>
 
-              {/* User Remarks Section */}
-              <div className="col-md-6 mt-3">
-                <div className="card border-0 shadow-sm">
-                  <div className="card-header bg-light">
-                    <h6 className="mb-0">User Remarks</h6>
+          {/* Right column */}
+          <Col md={6}>
+            <p><strong>Requested By:</strong> {selectedBooking.username || selectedBooking.requestFrom?.username}</p>
+            <p><strong>Department:</strong> {selectedBooking.department || selectedBooking.requestFrom?.department}</p>
+            <p><strong>Mobile:</strong> {selectedBooking.mobileNumber || "—"}</p>
+            <p>
+              <strong>Status:</strong>{" "}
+              <span
+                className={`badge ${
+                  selectedBooking.status === "Booked"
+                    ? "bg-success"
+                    : selectedBooking.status === "Pending"
+                    ? "bg-warning text-dark"
+                    : "bg-danger"
+                }`}
+              >
+                {selectedBooking.status || "Pending"}
+              </span>
+            </p>
+            <p><strong>Tables (With Cloth):</strong> {selectedBooking.tablesWithCloth || 0}</p>
+            <p><strong>Tables (Without Cloth):</strong> {selectedBooking.tablesWithoutCloth || 0}</p>
+            <p><strong>Executive Chairs:</strong> {selectedBooking.executiveChairs || 0}</p>
+            <p><strong>Participant Chairs:</strong> {selectedBooking.participantChairs || 0}</p>
+            <p><strong>Additional Chairs:</strong> {selectedBooking.additionalChairs || 0}</p>
+          </Col>
+
+          {/* Remarks */}
+          <Col md={6}>
+            <div className="card border-0 shadow-sm">
+              <div className="card-header bg-light">
+                <h6 className="mb-0">Admin Remarks</h6>
+              </div>
+              <div className="card-body">
+                {selectedBooking.adminRemarks ? (
+                  <div className="p-2 bg-white rounded border">
+                    {selectedBooking.adminRemarks}
                   </div>
-                  <div className="card-body">
-                    {selectedBooking.userRemarks ? (
-                      <div className="p-2 bg-white rounded border">
-                        {selectedBooking.userRemarks}
-                      </div>
-                    ) : (
-                      <p className="text-muted mb-0">No remarks from user</p>
-                    )}
-                  </div>
-                </div>
+                ) : (
+                  <p className="text-muted mb-0">No remarks from admin</p>
+                )}
               </div>
             </div>
-          ) : (
-            <p>No booking selected.</p>
-          )}
-        </Modal.Body>
+          </Col>
 
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setViewModalShow(false)}>Close</Button>
-        </Modal.Footer>
-      </Modal>
+          <Col md={6}>
+            <div className="card border-0 shadow-sm">
+              <div className="card-header bg-light">
+                <h6 className="mb-0">User Remarks</h6>
+              </div>
+              <div className="card-body">
+                {selectedBooking.userRemarks ? (
+                  <div className="p-2 bg-white rounded border">
+                    {selectedBooking.userRemarks}
+                  </div>
+                ) : (
+                  <p className="text-muted mb-0">No remarks from user</p>
+                )}
+              </div>
+            </div>
+          </Col>
+        </Row>
+      </div>
+    ) : (
+      <p>No booking selected.</p>
+    )}
+  </Modal.Body>
 
-      {/* Remarks Modal */}
-      <Modal show={remarksModalShow} onHide={() => setRemarksModalShow(false)} size="md" centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Add Remarks</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form.Group>
-            <Form.Control
-              as="textarea"
-              rows={4}
-              placeholder="Enter your remarks here"
-              value={remarks}
-              onChange={(e) => setRemarks(e.target.value)}
-            />
-          </Form.Group>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setRemarksModalShow(false)}>Cancel</Button>
-          <Button variant="primary" onClick={saveRemarks}>Save Remarks</Button>
-        </Modal.Footer>
-      </Modal>
+  <Modal.Footer>
+    <Button variant="secondary" onClick={() => setViewModalShow(false)}>
+      Close
+    </Button>
+  </Modal.Footer>
+</Modal>
+
     </Container>
   );
 }
