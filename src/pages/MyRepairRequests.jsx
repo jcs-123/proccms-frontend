@@ -116,6 +116,26 @@ function MyRepairRequests() {
       toast.error("Error saving remark: " + err.message);
     }
   };
+  const handleVerify = async (id) => {
+    try {
+      const res = await fetch(
+        `https://proccms-backend.onrender.com/api/repair-requests/${id}/verify`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ isVerified: true }),
+        }
+      );
+
+      if (!res.ok) throw new Error("Verification failed");
+
+      toast.success("Request verified successfully!");
+      fetchRequests(); // Refresh table
+    } catch (err) {
+      toast.error("Error verifying request: " + err.message);
+    }
+  };
+
 
   const getStatusBadgeClass = (status) => {
     switch (status.toLowerCase()) {
@@ -158,14 +178,14 @@ function MyRepairRequests() {
     return (
       <div className="d-flex justify-content-center mt-4">
         <Pagination>
-          <Pagination.Prev 
-            disabled={currentPage === 1} 
-            onClick={() => paginate(currentPage - 1)} 
+          <Pagination.Prev
+            disabled={currentPage === 1}
+            onClick={() => paginate(currentPage - 1)}
           />
           {items}
-          <Pagination.Next 
-            disabled={currentPage === totalPages} 
-            onClick={() => paginate(currentPage + 1)} 
+          <Pagination.Next
+            disabled={currentPage === totalPages}
+            onClick={() => paginate(currentPage + 1)}
           />
         </Pagination>
       </div>
@@ -266,14 +286,21 @@ function MyRepairRequests() {
                     <td>
                       {req.status === "Completed" ? (
                         req.isVerified ? (
-                          <span className="badge bg-success">Verified</span>
+                          <span className="badge bg-success">Verified ✅</span>
                         ) : (
-                          <span className="badge bg-secondary">Not Verified</span>
+                          <Button
+                            size="sm"
+                            variant="warning"
+                            onClick={() => handleVerify(req.id)}
+                          >
+                            Verify Work
+                          </Button>
                         )
                       ) : (
                         <span className="text-muted">--</span>
                       )}
                     </td>
+
                     <td>
                       <div className="d-flex gap-2 justify-content-center">
                         <Button
@@ -297,7 +324,7 @@ function MyRepairRequests() {
               )}
             </tbody>
           </Table>
-          
+
           {/* Pagination */}
           {renderPagination()}
         </Col>

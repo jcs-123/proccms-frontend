@@ -632,6 +632,31 @@ function RepairList() {
 
                                     <td style={{ minWidth: "110px", padding: "8px", textAlign: "center" }}>
                                         <span
+                                            className={`badge px-3 py-2 mb-2 rounded shadow-sm ${req.status === 'Pending'
+                                                ? 'bg-danger text-white'          // 🔴 Pending
+                                                : req.status === 'Assigned'
+                                                    ? 'text-dark'                     // 🟡 Assigned (custom yellow)
+                                                    : req.status === 'Completed'
+                                                        ? 'bg-success text-white'         // 🟢 Completed
+                                                        : req.status === 'Duplicate'
+                                                            ? 'bg-secondary text-white'       // ⚪ Duplicate
+                                                            : req.status === 'Refer Remark'
+                                                                ? 'bg-primary text-white'         // 🔵 Refer Remark
+                                                                : 'bg-dark text-white'            // ⚫ Default
+                                                }`}
+                                            style={{
+                                                backgroundColor: req.status === 'Assigned' ? '#FFD700' : undefined, // Pure bright yellow
+                                                fontWeight: 900,             // 🔥 Extra-bold text
+                                                letterSpacing: '0.4px',
+                                                fontSize: '0.68rem',         // smaller size for compactness
+                                                textTransform: 'none',       // small letters
+                                                padding: '3px 8px',          // tighter badge
+                                            }}
+                                        >
+                                            {req.status}
+                                        </span>
+
+                                        {/* <span
                                             className={`badge px-2 py-1 mb-2 rounded text-white fw-semibold ${req.status === 'Pending'
                                                 ? 'bg-danger'
                                                 : req.status === 'Assigned'
@@ -646,7 +671,8 @@ function RepairList() {
                                                 }`}
                                         >
                                             {req.status}
-                                        </span>
+                                        </span> */}
+
                                         <Form.Select
                                             size="sm"
                                             className="mt-1"
@@ -662,13 +688,23 @@ function RepairList() {
                                     <td>
                                         {req.status === "Completed" ? (
                                             req.isVerified ? (
+                                                <span className="badge bg-success">User Verified ✅</span>
+                                            ) : (
+                                                <span className="badge bg-warning text-dark">Awaiting User Verification</span>
+                                            )
+                                        ) : (
+                                            <span className="text-muted">--</span>
+                                        )}
+
+                                        {/* {req.status === "Completed" ? (
+                                            req.isVerified ? (
                                                 <Button size="sm" variant="success">Verified</Button>
                                             ) : (
                                                 <Button size="sm" variant="warning" onClick={() => handleVerify(req.id)}>Verify</Button>
                                             )
                                         ) : (
                                             <span className="text-muted">--</span>
-                                        )}
+                                        )} */}
                                     </td>
                                     <td>
                                         <div className="d-flex flex-column gap-1">
