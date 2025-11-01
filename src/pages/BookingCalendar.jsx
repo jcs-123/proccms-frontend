@@ -15,8 +15,8 @@ import {
 } from '@mui/material';
 import './BookingCalendar.css';
 
-const username = localStorage.getItem("name");
-const role = localStorage.getItem("role");
+// const username = localStorage.getItem("name");
+// const role = localStorage.getItem("role");
 
 const CalendarBooking = ({ onBookingUpdated }) => {
   const [bookings, setBookings] = useState([]);
@@ -31,6 +31,18 @@ const CalendarBooking = ({ onBookingUpdated }) => {
 
   const calendarRef = useRef(null);
   const location = useLocation(); // for getting ?date param from URL
+
+  const [username, setUsername] = useState(localStorage.getItem("name") || "");
+  const [role, setRole] = useState(localStorage.getItem("role") || "");
+
+  useEffect(() => {
+    const checkRoleChange = () => {
+      setUsername(localStorage.getItem("name") || "");
+      setRole(localStorage.getItem("role") || "");
+    };
+    window.addEventListener("storage", checkRoleChange);
+    return () => window.removeEventListener("storage", checkRoleChange);
+  }, []);
 
   const fetchBookings = async () => {
     try {
