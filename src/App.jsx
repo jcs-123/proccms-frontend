@@ -25,6 +25,7 @@ import VehiclePassForm from "./pages/VehiclePassForm";
 import AssignedBookings from "./pages/AssignedBookings";
 import Login from "./pages/LoginPage";
 import VehicleGetdata from "./pages/VehicleGetdata";
+import AdminManualCompletion from "./pages/AdminManualCompletion";
 
 
 function App() {
@@ -126,6 +127,7 @@ function App() {
                     <Route path="/vehicle-pass/new" element={<NewVehiclePassForm />} />
                     <Route path="/admin/add-staff" element={<AddStaff />} />
                     <Route path="/admin/get-data" element={<VehicleGetdata />} />
+                    <Route path="/admin/manual-completion" element={<AdminManualCompletion />} />
 
                   </>
                 )}

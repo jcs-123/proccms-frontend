@@ -688,9 +688,9 @@ function RepairList() {
                                     <td>
                                         {req.status === "Completed" ? (
                                             req.isVerified ? (
-                                                <span className="badge bg-success">User Verified ✅</span>
+                                                <span className="badge bg-success"> Verified ✅</span>
                                             ) : (
-                                                <span className="badge bg-warning text-dark">Awaiting User Verification</span>
+                                                <span className="badge bg-warning text-dark">Awaiting  Verification</span>
                                             )
                                         ) : (
                                             <span className="text-muted">--</span>

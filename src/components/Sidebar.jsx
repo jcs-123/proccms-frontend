@@ -57,7 +57,14 @@ function Sidebar({ role }) {
       { to: "/gatepass", icon: "bi-door-open", label: "Gate Pass" },
       { to: "/vehicle-pass", icon: "bi-car-front", label: "Vehicle Pass" },
       { to: "/admin/add-staff", icon: "bi-person-plus", label: "Add Staff" },
-      { to: "/admin/get-data", icon: "bi bi-qr-code", label: "VehiclePass Scanner" },
+      {
+        to: "/admin/manual-completion",
+        icon: "bi-person-exclamation",
+        label: "Pending Verification",
+        color: "red"
+      },
+
+      // { to: "/admin/get-data", icon: "bi bi-qr-code", label: "VehiclePass Scanner" },
     ],
     user: [
       { to: "/repair-request", icon: "bi-wrench", label: "Repair Request" },
@@ -195,14 +202,23 @@ function Sidebar({ role }) {
                     style={{
                       ...linkStyle,
                       ...(hoveredIndex === idx ? linkHoverStyle : {}),
+                      color: link.textColor || linkStyle.color, // 🔴 Apply red color only for Pending Verification
                     }}
                     onMouseEnter={() => setHoveredIndex(idx)}
                     onMouseLeave={() => setHoveredIndex(null)}
                     onClick={() => isMobile && setSidebarOpen(false)}
                   >
-                    <i className={`bi ${link.icon}`} style={iconStyle}></i>
-                    {link.label}
+                    <i
+                      className={`bi ${link.icon}`}
+                      style={{
+                        ...iconStyle,
+                        color: link.color || iconStyle.color, // 🔴 icon red if defined
+                      }}
+                    ></i>
+                    <span style={{ color: link.color || linkStyle.color }}>{link.label}</span> {/* 🔴 text red if defined */}
+
                   </Link>
+
                 </li>
               ))}
             </ul>
