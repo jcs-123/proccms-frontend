@@ -407,141 +407,157 @@ const AddStaff = () => {
       </motion.div>
 
       {/* Staff List Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.4 }}
+     {/* Staff List Section */}
+<motion.div
+  initial={{ opacity: 0, y: 50 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.8, delay: 0.4 }}
+>
+  <Paper 
+    elevation={6} 
+    sx={{ 
+      p: 4, 
+      borderRadius: 4, 
+      background: "white",
+      border: "1px solid #e2e8f0",
+    }}
+  >
+    <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+      <GroupIcon sx={{ fontSize: 32, color: "#0ea5e9", mr: 2 }} />
+      <Typography 
+        variant="h4" 
+        sx={{ 
+          fontWeight: "bold",
+          background: "linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%)",
+          backgroundClip: "text",
+          WebkitBackgroundClip: "text",
+          color: "transparent",
+        }}
       >
-        <Paper 
-          elevation={6} 
-          sx={{ 
-            p: 4, 
-            borderRadius: 4, 
-            background: "white",
-            border: "1px solid #e2e8f0",
-          }}
-        >
-          <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-            <GroupIcon sx={{ fontSize: 32, color: "#0ea5e9", mr: 2 }} />
-            <Typography 
-              variant="h4" 
-              sx={{ 
-                fontWeight: "bold",
-                background: "linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%)",
-                backgroundClip: "text",
-                WebkitBackgroundClip: "text",
-                color: "transparent",
-              }}
-            >
-              Staff Members ({staffList.length})
-            </Typography>
-          </Box>
+        Staff Members ({staffList.length})
+      </Typography>
+    </Box>
 
-          <TableContainer 
-            component={Paper} 
-            elevation={2}
-            sx={{ 
-              borderRadius: 3,
-              overflow: "hidden",
-            }}
-          >
-            <Table>
-              <TableHead>
-                <TableRow sx={{ backgroundColor: "#f8fafc" }}>
-                  <TableCell sx={{ fontWeight: "bold", fontSize: "1rem", py: 2 }}>#</TableCell>
-                  <TableCell sx={{ fontWeight: "bold", fontSize: "1rem", py: 2 }}>Name</TableCell>
-                  <TableCell sx={{ fontWeight: "bold", fontSize: "1rem", py: 2 }}>Username</TableCell>
-                  <TableCell sx={{ fontWeight: "bold", fontSize: "1rem", py: 2 }}>Department</TableCell>
-                  <TableCell sx={{ fontWeight: "bold", fontSize: "1rem", py: 2 }}>Contact</TableCell>
-                  <TableCell sx={{ fontWeight: "bold", fontSize: "1rem", py: 2 }} align="center">Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <AnimatePresence>
-                  {staffList.length > 0 ? (
-                    staffList.map((staff, index) => (
-                      <motion.tr
-                        key={staff._id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ delay: index * 0.1 }}
-                        style={{
-                          backgroundColor: index % 2 === 0 ? "#f9fafb" : "#ffffff",
+    <TableContainer 
+      component={Paper} 
+      elevation={2}
+      sx={{ 
+        borderRadius: 3,
+        overflow: "hidden",
+      }}
+    >
+      <Table>
+        <TableHead>
+          <TableRow sx={{ backgroundColor: "#f8fafc" }}>
+            <TableCell sx={{ fontWeight: "bold", fontSize: "1rem", py: 2 }}>#</TableCell>
+            <TableCell sx={{ fontWeight: "bold", fontSize: "1rem", py: 2 }}>Name</TableCell>
+            <TableCell sx={{ fontWeight: "bold", fontSize: "1rem", py: 2 }}>Username</TableCell>
+            <TableCell sx={{ fontWeight: "bold", fontSize: "1rem", py: 2 }}>Password</TableCell>
+            <TableCell sx={{ fontWeight: "bold", fontSize: "1rem", py: 2 }}>Department</TableCell>
+            <TableCell sx={{ fontWeight: "bold", fontSize: "1rem", py: 2 }}>Contact</TableCell>
+            <TableCell sx={{ fontWeight: "bold", fontSize: "1rem", py: 2 }} align="center">Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <AnimatePresence>
+            {staffList.length > 0 ? (
+              staffList.map((staff, index) => (
+                <motion.tr
+                  key={staff._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ delay: index * 0.1 }}
+                  style={{
+                    backgroundColor: index % 2 === 0 ? "#f9fafb" : "#ffffff",
+                  }}
+                >
+                  <TableCell sx={{ py: 2, fontWeight: "medium" }}>
+                    {index + 1}
+                  </TableCell>
+                  <TableCell sx={{ py: 2 }}>
+                    <Typography variant="body1" fontWeight="500">
+                      {staff.name}
+                    </Typography>
+                  </TableCell>
+                  <TableCell sx={{ py: 2 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      @{staff.username}
+                    </Typography>
+                  </TableCell>
+                  <TableCell sx={{ py: 2 }}>
+                    <Typography 
+                      variant="body2" 
+                      sx={{ 
+                        fontFamily: 'monospace',
+                        backgroundColor: '#f1f5f9',
+                        padding: '4px 8px',
+                        borderRadius: '4px',
+                        fontSize: '0.875rem'
+                      }}
+                    >
+                      {staff.password}
+                    </Typography>
+                  </TableCell>
+                  <TableCell sx={{ py: 2 }}>
+                    <Chip
+                      label={staff.department}
+                      size="small"
+                      sx={{
+                        backgroundColor: getDepartmentColor(staff.department),
+                        color: "white",
+                        fontWeight: "500",
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell sx={{ py: 2 }}>
+                    <Box>
+                      <Typography variant="body2" color="text.secondary">
+                        {staff.email}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {staff.phone}
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell align="center" sx={{ py: 2 }}>
+                    <Zoom in={true} style={{ transitionDelay: `${index * 100}ms` }}>
+                      <IconButton 
+                        onClick={() => handleEdit(staff)}
+                        sx={{
+                          backgroundColor: "#0ea5e9",
+                          color: "white",
+                          "&:hover": {
+                            backgroundColor: "#0284c7",
+                            transform: "scale(1.1)",
+                          },
+                          transition: "all 0.2s",
                         }}
                       >
-                        <TableCell sx={{ py: 2, fontWeight: "medium" }}>
-                          {index + 1}
-                        </TableCell>
-                        <TableCell sx={{ py: 2 }}>
-                          <Typography variant="body1" fontWeight="500">
-                            {staff.name}
-                          </Typography>
-                        </TableCell>
-                        <TableCell sx={{ py: 2 }}>
-                          <Typography variant="body2" color="text.secondary">
-                            @{staff.username}
-                          </Typography>
-                        </TableCell>
-                        <TableCell sx={{ py: 2 }}>
-                          <Chip
-                            label={staff.department}
-                            size="small"
-                            sx={{
-                              backgroundColor: getDepartmentColor(staff.department),
-                              color: "white",
-                              fontWeight: "500",
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell sx={{ py: 2 }}>
-                          <Box>
-                            <Typography variant="body2" color="text.secondary">
-                              {staff.email}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              {staff.phone}
-                            </Typography>
-                          </Box>
-                        </TableCell>
-                        <TableCell align="center" sx={{ py: 2 }}>
-                          <Zoom in={true} style={{ transitionDelay: `${index * 100}ms` }}>
-                            <IconButton 
-                              onClick={() => handleEdit(staff)}
-                              sx={{
-                                backgroundColor: "#0ea5e9",
-                                color: "white",
-                                "&:hover": {
-                                  backgroundColor: "#0284c7",
-                                  transform: "scale(1.1)",
-                                },
-                                transition: "all 0.2s",
-                              }}
-                            >
-                              <EditIcon />
-                            </IconButton>
-                          </Zoom>
-                        </TableCell>
-                      </motion.tr>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
-                        <Typography variant="h6" color="text.secondary">
-                          No staff members found
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                          Add your first staff member using the form above
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </AnimatePresence>
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
-      </motion.div>
+                        <EditIcon />
+                      </IconButton>
+                    </Zoom>
+                  </TableCell>
+                </motion.tr>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={7} align="center" sx={{ py: 6 }}>
+                  <Typography variant="h6" color="text.secondary">
+                    No staff members found
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                    Add your first staff member using the form above
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            )}
+          </AnimatePresence>
+        </TableBody>
+      </Table>
+    </TableContainer>
+  </Paper>
+</motion.div>
     </Container>
   );
 };
